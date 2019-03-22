@@ -15,7 +15,7 @@
 ## 20190122  宋明霖  添加节假日后首日与周一合并作为【节假日后首日】进行计数，逻辑一并调整
 ## 20190125  宋明霖  添加周五计数器，CVS添加周五计数器，排完班后需要相应地计数。
 ## 20190126  宋明霖  组人员调整F5 李松健 <=> C3 范嵩  ==> C3 李松健, F5 范嵩，去掉I4
-##                   相应的角色也调整 git test 5 1
+##                   相应的角色也调整 git test 5
 import csv
 import random
 import config
@@ -230,8 +230,8 @@ def PaiBan(StartDate, Weekday, Specialday):
                          'F1': staff_small.get('F1') + staff_full_night.get('F1'), \
                          'G1': staff_small.get('G1') + staff_full_night.get('G1'), \
                          'H1': staff_small.get('H1') + staff_full_night.get('H1'), \
-                         'I1': staff_small.get('I1') + staff_full_night.get('I1'), \
-                         'J1': staff_small.get('J1') + staff_full_night.get('J1')
+                         'I1': staff_small.get('I1') + staff_full_night.get('I1')#, \
+                         #'J1': staff_small.get('J1') + staff_full_night.get('J1')
     }
     # 随机排列
     staff_chief_night_random={}
