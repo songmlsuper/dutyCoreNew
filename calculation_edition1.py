@@ -15,7 +15,10 @@
 ## 20190122  宋明霖  添加节假日后首日与周一合并作为【节假日后首日】进行计数，逻辑一并调整
 ## 20190125  宋明霖  添加周五计数器，CVS添加周五计数器，排完班后需要相应地计数。
 ## 20190126  宋明霖  组人员调整F5 李松健 <=> C3 范嵩  ==> C3 李松健, F5 范嵩，去掉I4
-##                   相应的角色也调整 git test 5
+## 20190126  宋明霖  相应的角色也调整 git test 5
+## 20190514  宋明霖  王欣(女）不再参加值班、李沛衡暂不参加值班，张驰、沈全从新员工转为老员工（可担任值班经理）
+## 20190516  宋明霖  逻辑调整，原来单独选择新人，调整后：选择完主岗、网络、应用后，将主岗、非主岗人员（包括新人）混在一起选，新人只是角色（同女生)
+## 20190516  宋明霖  晓梅由原来的G2变为C8 由质量管理岗位变为应用岗位
 import csv
 import random
 import config
@@ -83,6 +86,7 @@ def PaiBan(StartDate, Weekday, Specialday):
 
     print("前3天的值班人员：",LastMateList)
     f.write('\n' + '前3天的值班人员：' + str(LastMateList))
+
     csvfile.close()
     #######################从历史数据中提取最后一次计数器###########
     with open("D:\\dutyInfo\\duty_counter.csv")  as csvfile:
@@ -132,16 +136,18 @@ def PaiBan(StartDate, Weekday, Specialday):
     list_group_D = config.list_group_D
     list_group_E = config.list_group_E
     list_group_F = config.list_group_F
-    list_group_G = config.list_group_G
+    #list_group_G = config.list_group_G
+    list_group_H = config.list_group_H
+    list_group_I = config.list_group_I
 
     # 老员工总人数
     old_amount = len(list_group_A) + len(list_group_B) + len(list_group_C) + len(list_group_D) + \
-                 len(list_group_E) + len(list_group_F) +  len(list_group_G)
+                 len(list_group_E) + len(list_group_F) + + len(list_group_H) + len(list_group_I)
     # 除去网络和应用的老员工数量
     old_other_amount = len(list_group_A) + len(list_group_D) + len(list_group_E) + len(list_group_F) + \
-                       len(list_group_G)
+                       + len(list_group_H)
     # 所有员工数量
-    total = old_amount + main_amount + new_amount
+    total = old_amount + main_amount
     print("参与排班人员总数：", total)
     f.write('\n' + '参与排班人员总数：' + str(total))
 
@@ -152,7 +158,7 @@ def PaiBan(StartDate, Weekday, Specialday):
     # 初始化每天按顺序导出到csv的值班名单
     duty_result = [0, 0, 0, 0, 0, 0, 0]
     #每天主岗的人数
-    chief_amout=1
+    chief_amout= 0
 
     ############################计数器###########################
 
@@ -230,8 +236,7 @@ def PaiBan(StartDate, Weekday, Specialday):
                          'F1': staff_small.get('F1') + staff_full_night.get('F1'), \
                          'G1': staff_small.get('G1') + staff_full_night.get('G1'), \
                          'H1': staff_small.get('H1') + staff_full_night.get('H1'), \
-                         'I1': staff_small.get('I1') + staff_full_night.get('I1')#, \
-                         #'J1': staff_small.get('J1') + staff_full_night.get('J1')
+                         'I1': staff_small.get('I1') + staff_full_night.get('I1')
     }
     # 随机排列
     staff_chief_night_random={}
@@ -246,14 +251,14 @@ def PaiBan(StartDate, Weekday, Specialday):
     f.write('\n' + '主岗夜班总数量,乱序：' + str(staff_chief_night_random))
 
     # 非主岗老员工的夜班总数量,单独列出网络和应用岗位
-    # 网络岗位的非主岗老员工的夜班总数量
+    # 网络岗位的非主岗员工的夜班总数量(原来是非主岗老员工，现在把新人纳入进来，新人只是一个角色)
     staff_old_night_B = {
                          'B2': staff_small.get('B2') + staff_full_night.get('B2'), \
                          'B3': staff_small.get('B3') + staff_full_night.get('B3'), \
                          'B4': staff_small.get('B4') + staff_full_night.get('B4'), \
                          'B5': staff_small.get('B5') + staff_full_night.get('B5'), \
                          'B6': staff_small.get('B6') + staff_full_night.get('B6')
-                                }
+        }
     # 随机排列
     staff_old_night_B_random={}
     staff_old_night_B_list = list(staff_old_night_B.keys())
@@ -266,14 +271,16 @@ def PaiBan(StartDate, Weekday, Specialday):
     print("网络夜班总数量,乱序：", staff_old_night_B_random)
     f.write('\n' + '网络夜班总数量,乱序：' + str(staff_old_night_B_random))
 
-    # 应用岗位非主岗老员工的夜班总数量
+    # 应用岗位非主岗员工的夜班总数量(原来是非主岗老员工，现在把新人纳入，新人只是一个角色)
     staff_old_night_C = {
-                         'C2': staff_small.get('C2') + staff_full_night.get('C2'), \
-                         # C3 与 F5 对调后C3变为松健  F5 变为嵩哥，C3不是应用岗位老员工，因此需要去掉
-    #                     'C3': staff_small.get('C3') + staff_full_night.get('C3'), \
+                         #'C2': staff_small.get('C2') + staff_full_night.get('C2'), \
+                         'C3': staff_small.get('C3') + staff_full_night.get('C3'), \
                          'C4': staff_small.get('C4') + staff_full_night.get('C4'), \
-                         'C5': staff_small.get('C5') + staff_full_night.get('C5')
-                                }
+                         'C5': staff_small.get('C5') + staff_full_night.get('C5'), \
+                         'C6': staff_small.get('C6') + staff_full_night.get('C6'), \
+                         'C7': staff_small.get('C7') + staff_full_night.get('C7'), \
+                         'C8': staff_small.get('C8') + staff_full_night.get('C8')
+                        }
     #随机排列
     staff_old_night_C_random={}
     staff_old_night_C_list = list(staff_old_night_C.keys())
@@ -287,23 +294,26 @@ def PaiBan(StartDate, Weekday, Specialday):
     f.write('\n' + '应用夜班总数量,乱序：' + str(staff_old_night_C_random))
 
 
-    # 除了应用和网络的非主岗老员工的夜班总数量
+    # 除了应用和网络的非主岗员工的夜班总数量(包括除应用和网络的老员工及新人)
     staff_old_night_other = {
-                             'A3': staff_small.get('A3') + staff_full_night.get('A3'), \
-                             'A4': staff_small.get('A4') + staff_full_night.get('A4'), \
-                             'A5': staff_small.get('A5') + staff_full_night.get('A5'), \
-                             'D3': staff_small.get('D3') + staff_full_night.get('D3'), \
-                             'D4': staff_small.get('D4') + staff_full_night.get('D4'), \
-                             'E2': staff_small.get('E2') + staff_full_night.get('E2'), \
-                             'E3': staff_small.get('E3') + staff_full_night.get('E3'), \
-                             'E4': staff_small.get('E4') + staff_full_night.get('E4'), \
-                             'F2': staff_small.get('F2') + staff_full_night.get('F2'), \
-                             'F3': staff_small.get('F3') + staff_full_night.get('F3'), \
-                             'F4': staff_small.get('F4') + staff_full_night.get('F4'), \
-                             # 与C3对调，F5变为嵩哥，因此添加嵩哥 added by songml 20190126
-                             'F5': staff_small.get('F5') + staff_full_night.get('F5'), \
-                             'G2': staff_small.get('G2') + staff_full_night.get('G2')
-                                       }
+                            'A3': staff_small.get('A3') + staff_full_night.get('A3'), \
+                            'A4': staff_small.get('A4') + staff_full_night.get('A4'), \
+                            'A5': staff_small.get('A5') + staff_full_night.get('A5'), \
+                            'A6': staff_small.get('A6') + staff_full_night.get('A6'), \
+                            'D3': staff_small.get('D3') + staff_full_night.get('D3'), \
+                            'E2': staff_small.get('E2') + staff_full_night.get('E2'), \
+                            'E3': staff_small.get('E3') + staff_full_night.get('E3'), \
+                            'E4': staff_small.get('E4') + staff_full_night.get('E4'), \
+                            'F2': staff_small.get('F2') + staff_full_night.get('F2'), \
+                            'F3': staff_small.get('F3') + staff_full_night.get('F3'), \
+                            'F4': staff_small.get('F4') + staff_full_night.get('F4'), \
+                            'F5': staff_small.get('F5') + staff_full_night.get('F5'), \
+                            'H2': staff_small.get('H2') + staff_full_night.get('H2'), \
+                            'H3': staff_small.get('H3') + staff_full_night.get('H3'), \
+                            'I2': staff_small.get('I2') + staff_full_night.get('I2'), \
+                            'I3': staff_small.get('I3') + staff_full_night.get('I3'), \
+                            'H4': staff_small.get('H4') + staff_full_night.get('H4')
+        }
     #随机排列
     staff_old_night_other_random={}
     staff_old_night_other_list = list(staff_old_night_other.keys())
@@ -311,42 +321,19 @@ def PaiBan(StartDate, Weekday, Specialday):
     for i in staff_old_night_other_list:
         staff_old_night_other_random.update({i: staff_old_night_other.get(i)})
 
-    print("其他老员工夜班总数量：", staff_old_night_other)
-    f.write('\n' + '其他老员工夜班总数量：' + str(staff_old_night_other))
-    print("其他老员工夜班总数量,乱序：", staff_old_night_other_random)
-    f.write('\n' + '其他老员工夜班总数量,乱序：' + str(staff_old_night_other_random))
-
-    #各个岗位老员工+主岗的夜班总数量
-    # 由于浅拷贝不会拷贝子对象，因此需要再update一次，以后再试的时候可以考虑使用deepcopy方法 by songml 20190122
-    staff_ChiefAndOtherOld=staff_old_night_other_random.copy()
-    staff_ChiefAndOtherOld.update(staff_chief_night_random)
-
-    # 随机排列
-    staff_ChiefAndOtherOld_random = {}
-    staff_ChiefAndOtherOld_list = list(staff_ChiefAndOtherOld.keys())
-    random.shuffle(staff_ChiefAndOtherOld_list)
-    for i in staff_ChiefAndOtherOld_list:
-        staff_ChiefAndOtherOld_random.update({i: staff_ChiefAndOtherOld.get(i)})
-
-    print("各个岗位老员工+主岗的夜班总数量：", staff_ChiefAndOtherOld)
-    f.write('\n' + '各个岗位老员工+主岗的夜班总数量：' + str(staff_ChiefAndOtherOld))
-    print("各个岗位老员工+主岗的夜班总数量,乱序：", staff_ChiefAndOtherOld_random)
-    f.write('\n' + '各个岗位老员工+主岗的夜班总数量,乱序：' + str(staff_ChiefAndOtherOld_random))
+    print("除应用及网络，其他普通员工夜班总数量：", staff_old_night_other)
+    f.write('\n' + '除应用及网络，其他普通员工夜班总数量：' + str(staff_old_night_other))
+    print("除应用及网络，其他普通员工夜班总数量,乱序：", staff_old_night_other_random)
+    f.write('\n' + '除应用及网络，其他普通员工夜班总数量,乱序：' + str(staff_old_night_other_random))
 
     # 新员工的夜班总数量
     staff_new_night = {
-                       'A6': staff_small.get('A6') + staff_full_night.get('A6'), \
-                       'B7': staff_small.get('B7') + staff_full_night.get('B7'), \
-                       'C6': staff_small.get('C6') + staff_full_night.get('C6'), \
-                       'C7': staff_small.get('C7') + staff_full_night.get('C7'), \
-                       'H2': staff_small.get('H2') + staff_full_night.get('H2'), \
-                       'H3': staff_small.get('H3') + staff_full_night.get('H3'), \
-                       'I2': staff_small.get('I2') + staff_full_night.get('I2'), \
-                       'I3': staff_small.get('I3') + staff_full_night.get('I3'), \
-        #晓丽不再参与值班，因此去掉I4 deleted by songml 20190126
-        #               'I4': staff_small.get('I4') + staff_full_night.get('I4'), \
-                       'C3': staff_small.get('C3') + staff_full_night.get('C3')
-                            }
+        'H4': staff_small.get('H4') + staff_full_night.get('H4'), \
+        'H3': staff_small.get('H3') + staff_full_night.get('H3'), \
+        'I2': staff_small.get('I2') + staff_full_night.get('I2'), \
+        'I3': staff_small.get('I3') + staff_full_night.get('I3'), \
+        'C3': staff_small.get('C3') + staff_full_night.get('C3')
+    }
     # 随机排列
     staff_new_night_random = {}
     staff_new_night_list = list(staff_new_night.keys())
@@ -358,6 +345,24 @@ def PaiBan(StartDate, Weekday, Specialday):
     f.write('\n' + '新人夜班总数量：' + str(staff_new_night))
     print("新人夜班总数量,乱序：", staff_new_night_random)
     f.write('\n' + '新人夜班总数量,乱序：' + str(staff_new_night_random))
+
+    # 把主岗及除应用岗位的其它员工放到一个池子里 by songml 20190514
+    staff_ChiefAndOtherOld=staff_old_night_other_random.copy()
+    staff_ChiefAndOtherOld.update(staff_chief_night_random)
+
+    # 随机排列
+    staff_ChiefAndOtherOld_random = {}
+    staff_ChiefAndOtherOld_list = list(staff_ChiefAndOtherOld.keys())
+    random.shuffle(staff_ChiefAndOtherOld_list)
+    for i in staff_ChiefAndOtherOld_list:
+        staff_ChiefAndOtherOld_random.update({i: staff_ChiefAndOtherOld.get(i)})
+
+    print("除应用及网络的各个岗位员工+主岗的夜班总数量：", staff_ChiefAndOtherOld)
+    f.write('\n' + '除应用及网络的各个岗位员工+主岗的夜班总数量：' + str(staff_ChiefAndOtherOld))
+    print("除应用及网络的各个岗位员工+主岗的夜班总数量,乱序：", staff_ChiefAndOtherOld_random)
+    f.write('\n' + '除应用及网络的各个岗位员工+主岗的夜班总数量,乱序：' + str(staff_ChiefAndOtherOld_random))
+
+
 
     ################################排序##################################################
     # 根据夜班总数量排的   主岗列表，按值夜班数量从小到大排序
@@ -382,7 +387,7 @@ def PaiBan(StartDate, Weekday, Specialday):
 
             f.write('\n' + '+++主岗列表，按值夜班数量(节假日首日及周五计数进行排序)从小到大排序：' + str(staff_chief_night_inorder))
 
-            # 根据夜班总数量排的   除去网络和应用老员工列表，按值夜班数量从小到大排序
+            # 根据夜班总数量排的除去网络和应用员工列表，按值夜班数量从小到大排序
 
             ### new added
             tmplist2 = []
@@ -391,13 +396,13 @@ def PaiBan(StartDate, Weekday, Specialday):
                                  , staff_small_fri.get(staff), staff))
             staff_old_night_other_inorder = sorted(tmplist2, key=lambda x: (x[0], x[1], x[2]))
             ### new added
-            f.write('\n' + '+++ 完整版排序列表 ===== 除去网络和应用老员工列表，按值夜班数量(节假日首日及周五计数进行排序)从小到大排序：' + str(
+            f.write('\n' + '+++ 完整版排序列表 ===== 除去网络和应用员工列表，按值夜班数量(节假日首日及周五计数进行排序)从小到大排序：' + str(
                 staff_old_night_other_inorder))
 
             for i in range(len(staff_old_night_other_inorder)):
                 staff_old_night_other_inorder[i] = staff_old_night_other_inorder[i][3]
 
-            f.write('\n' + '+++除去网络和应用老员工列表，按值夜班数量(节假日首日及周五计数进行排序)从小到大排序：' + str(staff_old_night_other_inorder))
+            f.write('\n' + '+++除去网络和应用员工列表，按值夜班数量(节假日首日及周五计数进行排序)从小到大排序：' + str(staff_old_night_other_inorder))
 
             # 根据夜班总数量排的   新员工列表，按值夜班数量从小到大排序
             ### new added
@@ -446,13 +451,13 @@ def PaiBan(StartDate, Weekday, Specialday):
 
             f.write('\n' + '+++ 应用岗位列表，按值夜班数量(节假日首日及周五计数进行排序)从小到大排序：' + str(staff_old_night_C_inorder))
 
-            # 根据夜班总数量排的   主岗和除了网络应用的老员工，按值夜班数量从小到大排序
+            # 根据夜班总数量排的   主岗和除了网络应用的员工，按值夜班数量从小到大排序
             tmplist6 = []
             for staff in staff_ChiefAndOtherOld_random.keys():
                 tmplist6.append((staff_ChiefAndOtherOld_random.get(staff), staff_small_mon.get(staff)
                                  , staff_small_fri.get(staff), staff))
             staff_ChiefAndOtherOld_inorder = sorted(tmplist6, key=lambda x: (x[0], x[1], x[2]))
-            f.write('\n' + '+++ 完整版排序列表 ===== 主岗和除了网络应用的老员工，按值夜班数量(节假日首日及周五计数进行排序)从小到大排序：' + str(
+            f.write('\n' + '+++ 完整版排序列表 ===== 主岗和除了网络应用的员工，按值夜班数量(节假日首日及周五计数进行排序)从小到大排序：' + str(
                 staff_ChiefAndOtherOld_inorder))
 
             ### new added
@@ -466,15 +471,15 @@ def PaiBan(StartDate, Weekday, Specialday):
                 tmplist.append((staff_chief_night_random.get(staff), staff_small_mon.get(staff), staff))
 
             staff_chief_night_inorder = sorted(tmplist, key=lambda x: (x[0], x[1]))
-            f.write('\n' + '+++ 完整版排序列表=====主岗列表，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_chief_night_inorder))
+            f.write('\n' + '+++ 完整版排序列表=====主岗列表，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_chief_night_inorder))
             ### new added
             for i in range(len(staff_chief_night_inorder)):
                 # 值班人员变为数组第3个参数
                 staff_chief_night_inorder[i] = staff_chief_night_inorder[i][2]
 
-            f.write('\n' + '+++主岗列表，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_chief_night_inorder))
+            f.write('\n' + '+++主岗列表，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_chief_night_inorder))
 
-            # 根据夜班总数量排的   除去网络和应用老员工列表，按值夜班数量从小到大排序
+            # 根据夜班总数量排的   除去网络和应用员工列表，按值夜班数量从小到大排序
 
             ### new added
             tmplist2 = []
@@ -482,12 +487,12 @@ def PaiBan(StartDate, Weekday, Specialday):
                 tmplist2.append((staff_old_night_other_random.get(staff), staff_small_mon.get(staff), staff))
             staff_old_night_other_inorder = sorted(tmplist2, key=lambda x: (x[0], x[1]))
             ### new added
-            f.write('\n' + '+++ 完整版排序列表 ===== 除去网络和应用老员工列表，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_other_inorder))
+            f.write('\n' + '+++ 完整版排序列表 ===== 除去网络和应用员工列表，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_other_inorder))
 
             for i in range(len(staff_old_night_other_inorder)):
                 staff_old_night_other_inorder[i] = staff_old_night_other_inorder[i][2]
 
-            f.write('\n' + '+++除去网络和应用老员工列表，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_other_inorder))
+            f.write('\n' + '+++除去网络和应用员工列表，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_other_inorder))
 
             # 根据夜班总数量排的   新员工列表，按值夜班数量从小到大排序
             ### new added
@@ -496,14 +501,14 @@ def PaiBan(StartDate, Weekday, Specialday):
                 tmplist3.append((staff_new_night_random.get(staff), staff_small_mon.get(staff), staff))
             staff_new_night_inorder = sorted(tmplist3, key=lambda x: (x[0], x[1]))
 
-            f.write('\n' + '+++ 完整版排序列表 ===== 新员工列表，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_new_night_inorder))
+            f.write('\n' + '+++ 完整版排序列表 ===== 新员工列表，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_new_night_inorder))
 
             ### new added
 
             for i in range(len(staff_new_night_inorder)):
                 staff_new_night_inorder[i] = staff_new_night_inorder[i][2]
 
-            f.write('\n' + '+++ 新员工列表，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_new_night_inorder))
+            f.write('\n' + '+++ 新员工列表，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_new_night_inorder))
 
             # 根据夜班总数量排的   网络岗位列表，按值夜班数量从小到大排序
 
@@ -511,40 +516,40 @@ def PaiBan(StartDate, Weekday, Specialday):
             for staff in staff_old_night_B_random.keys():
                 tmplist4.append((staff_old_night_B_random.get(staff), staff_small_mon.get(staff), staff))
             staff_old_night_B_inorder = sorted(tmplist4, key=lambda x: (x[0], x[1]))
-            f.write('\n' + '+++ 完整版排序列表 ===== 网络岗位列表，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_B_inorder))
+            f.write('\n' + '+++ 完整版排序列表 ===== 网络岗位列表，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_B_inorder))
 
             ### new added
             for i in range(len(staff_old_night_B_inorder)):
                 staff_old_night_B_inorder[i] = staff_old_night_B_inorder[i][2]
 
-            f.write('\n' + '+++ 网络岗位列表，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_B_inorder))
+            f.write('\n' + '+++ 网络岗位列表，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_B_inorder))
 
             # 根据夜班总数量排的   应用岗位列表，按值夜班数量从小到大排序
             tmplist5 = []
             for staff in staff_old_night_C_random.keys():
                 tmplist5.append((staff_old_night_C_random.get(staff), staff_small_mon.get(staff), staff))
             staff_old_night_C_inorder = sorted(tmplist5, key=lambda x: (x[0], x[1]))
-            f.write('\n' + '+++ 完整版排序列表 ===== 应用岗位列表，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_C_inorder))
+            f.write('\n' + '+++ 完整版排序列表 ===== 应用岗位列表，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_C_inorder))
 
             ### new added
 
             for i in range(len(staff_old_night_C_inorder)):
                 staff_old_night_C_inorder[i] = staff_old_night_C_inorder[i][2]
 
-            f.write('\n' + '+++ 应用岗位列表，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_C_inorder))
+            f.write('\n' + '+++ 应用岗位列表，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_old_night_C_inorder))
 
-            # 根据夜班总数量排的   主岗和除了网络应用的老员工，按值夜班数量从小到大排序
+            # 根据夜班总数量排的   主岗和除了网络应用的员工，按值夜班数量从小到大排序
             tmplist6 = []
             for staff in staff_ChiefAndOtherOld_random.keys():
                 tmplist6.append((staff_ChiefAndOtherOld_random.get(staff), staff_small_mon.get(staff), staff))
             staff_ChiefAndOtherOld_inorder = sorted(tmplist6, key=lambda x: (x[0], x[1]))
-            f.write('\n' + '+++ 完整版排序列表 ===== 主岗和除了网络应用的老员工，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_ChiefAndOtherOld_inorder))
+            f.write('\n' + '+++ 完整版排序列表 ===== 主岗和除了网络应用的员工，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_ChiefAndOtherOld_inorder))
 
             ### new added
             for i in range(len(staff_ChiefAndOtherOld_inorder)):
                 staff_ChiefAndOtherOld_inorder[i] = staff_ChiefAndOtherOld_inorder[i][2]
 
-            f.write('\n' + '+++ 主岗和除了网络应用的老员工，按值夜班数量(及节假日首日数量进行排序)从小到大排序：' + str(staff_ChiefAndOtherOld_inorder))
+            f.write('\n' + '+++ 主岗和除了网络应用的员工，按值夜班数量(节假日首日数量进行排序)从小到大排序：' + str(staff_ChiefAndOtherOld_inorder))
         # 判断当天如果是周一或者节假日后首日20190123 by songml end
     # 判断当天如果是周五 2019
     elif (Specialday == 0 and Weekday == 5):
@@ -573,12 +578,12 @@ def PaiBan(StartDate, Weekday, Specialday):
             tmplist2.append((staff_old_night_other_random.get(staff), staff_small_fri.get(staff), staff))
         staff_old_night_other_inorder = sorted(tmplist2, key=lambda x: (x[0], x[1]))
         ### new added
-        f.write('\n' + '+++ 完整版排序列表 ===== 除去网络和应用老员工列表，按值夜班数量(及周五夜班数量进行排序)从小到大排序：' + str(staff_old_night_other_inorder))
+        f.write('\n' + '+++ 完整版排序列表 ===== 除去网络和应用员工列表，按值夜班数量(及周五夜班数量进行排序)从小到大排序：' + str(staff_old_night_other_inorder))
 
         for i in range(len(staff_old_night_other_inorder)):
             staff_old_night_other_inorder[i] = staff_old_night_other_inorder[i][2]
 
-        f.write('\n' + '+++除去网络和应用老员工列表，按值夜班数量(及周五夜班数量进行排序)从小到大排序：' + str(staff_old_night_other_inorder))
+        f.write('\n' + '+++除去网络和应用员工列表，按值夜班数量(及周五夜班数量进行排序)从小到大排序：' + str(staff_old_night_other_inorder))
 
         # 根据夜班总数量排的   新员工列表，按值夜班数量从小到大排序
         ### new added
@@ -624,18 +629,18 @@ def PaiBan(StartDate, Weekday, Specialday):
 
         f.write('\n' + '+++ 应用岗位列表，按值夜班数量(及周五夜班数量进行排序)从小到大排序：' + str(staff_old_night_C_inorder))
 
-        # 根据夜班总数量排的   主岗和除了网络应用的老员工，按值夜班数量从小到大排序
+        # 根据夜班总数量排的   主岗和除了网络应用的员工，按值夜班数量从小到大排序
         tmplist6 = []
         for staff in staff_ChiefAndOtherOld_random.keys():
             tmplist6.append((staff_ChiefAndOtherOld_random.get(staff), staff_small_fri.get(staff), staff))
         staff_ChiefAndOtherOld_inorder = sorted(tmplist6, key=lambda x: (x[0], x[1]))
-        f.write('\n' + '+++ 完整版排序列表 ===== 主岗和除了网络应用的老员工，按值夜班数量(及周五夜班数量进行排序)从小到大排序：' + str(staff_ChiefAndOtherOld_inorder))
+        f.write('\n' + '+++ 完整版排序列表 ===== 主岗和除了网络应用的员工，按值夜班数量(及周五夜班数量进行排序)从小到大排序：' + str(staff_ChiefAndOtherOld_inorder))
 
         ### new added
         for i in range(len(staff_ChiefAndOtherOld_inorder)):
             staff_ChiefAndOtherOld_inorder[i] = staff_ChiefAndOtherOld_inorder[i][2]
 
-        f.write('\n' + '+++ 主岗和除了网络应用的老员工，按值夜班数量(及周五夜班数量进行排序)从小到大排序：' + str(staff_ChiefAndOtherOld_inorder))
+        f.write('\n' + '+++ 主岗和除了网络应用的员工，按值夜班数量(及周五夜班数量进行排序)从小到大排序：' + str(staff_ChiefAndOtherOld_inorder))
         # 判断当天如果是周一或者节假日后首日(非周五)20190123 by songml end
 
         # added by songml 20190126
@@ -653,7 +658,7 @@ def PaiBan(StartDate, Weekday, Specialday):
         for i in range(len(staff_old_night_other_inorder)):
             staff_old_night_other_inorder[i] = staff_old_night_other_inorder[i][1]
 
-        f.write('\n' + '除去网络和应用老员工列表，按值夜班数量从小到大排序：' + str(staff_old_night_other_inorder))
+        f.write('\n' + '除去网络和应用员工列表，按值夜班数量从小到大排序：' + str(staff_old_night_other_inorder))
 
         # 根据夜班总数量排的   新员工列表，按值夜班数量从小到大排序
         staff_new_night_inorder = sorted(zip(staff_new_night_random.values(), staff_new_night_random.keys()),key=lambda x:x[0])
@@ -681,14 +686,15 @@ def PaiBan(StartDate, Weekday, Specialday):
         for i in range(len(staff_ChiefAndOtherOld_inorder)):
             staff_ChiefAndOtherOld_inorder[i] = staff_ChiefAndOtherOld_inorder[i][1]
 
-        f.write('\n' + '主岗和除了网络应用的老员工，按值夜班数量从小到大排序：' + str(staff_ChiefAndOtherOld_inorder))
+        f.write('\n' + '主岗和除了网络应用的员工，按值夜班数量从小到大排序：' + str(staff_ChiefAndOtherOld_inorder))
 
     ###################选出6个值班人员#############################
     ##########################################################
     ############将值班数量最少的主岗选出，作为值班第一天的岗位################
-    ############ 添加女生计数器 ########
-    ############ 添加女生计数器 counterWoman ########
-    duty_women_cnt=0 #added by songml
+    ############ 添加女生计数器 、新人计数器（20190514）########
+    ############ 添加女生计数器 counterWoman duty_new_cnt ########
+    duty_women_cnt = 0 #added by songml
+    duty_new_cnt = 0 #added by songml 20190514
 
     # 主岗不能是昨天值班的人员
     for i in range(main_amount):
@@ -696,6 +702,7 @@ def PaiBan(StartDate, Weekday, Specialday):
             continue
         else:
             duty.append(staff_chief_night_inorder[i])
+            chief_amout += 1
             # added by songml for duty_women_cnt 20181214
             if staff_chief_night_inorder[i] in list_women:
                 f.write('\n' + '选中的女生为：' + staff_chief_night_inorder[i])
@@ -704,102 +711,149 @@ def PaiBan(StartDate, Weekday, Specialday):
 
 
     ###################选出当天的值班新人###########################
-    for i in range(new_amount):
-        if staff_new_night_inorder[i] in LastMateList:
-            continue
-        else:
-            if duty[0][0] == staff_new_night_inorder[i][0]:
-                continue  # 如果值班主岗和新员工顺序表中的第一位是一个岗位的，则当日新员工为表中第二个人。
-            else:
-                duty.append(staff_new_night_inorder[i])  # 如果不相同，则当日新员工为表中第一位
-                # added by songml for duty_women_cnt 20181214
-                if staff_new_night_inorder[i] in list_women:
-                    f.write('\n' + '选中的女生为：' + staff_new_night_inorder[i])
-                    duty_women_cnt += 1
-                break
-
-    f.write('\n' + '选过主岗、新人的新版值班表：' + str(duty))
+    ## 删除新人强制选取 commented  by songml 20190514
+    # for i in range(new_amount):
+    #     if staff_new_night_inorder[i] in LastMateList:
+    #         continue
+    #     else:
+    #         if duty[0][0] == staff_new_night_inorder[i][0]:
+    #             continue  # 如果值班主岗和新员工顺序表中的第一位是一个岗位的，则当日新员工为表中第二个人。
+    #         else:
+    #             duty.append(staff_new_night_inorder[i])  # 如果不相同，则当日新员工为表中第一位
+    #             # added by songml for duty_women_cnt 20181214
+    #             if staff_new_night_inorder[i] in list_women:
+    #                 f.write('\n' + '选中的女生为：' + staff_new_night_inorder[i])
+    #                 duty_women_cnt += 1
+    #             break
+    #
+    f.write('\n' + '选过主岗的新版值班表：' + str(duty))
     ###################先判断是否有网络和应用岗位,然后选出余下的值班人员(新算法)######################
     ##############################################################################
 
-    f.write('\n' + '选过主岗和新人后女生的人数===========：' + str(duty_women_cnt))
-    if (duty[0][0] != "B") and (duty[1][0] != "B"):
+    f.write('\n' + '选过主岗后女生的人数===========：' + str(duty_women_cnt))
+    #if (duty[0][0] != "B") and (duty[1][0] != "B"):
+    if duty[0][0] != "B":
         print("没有网络，额外添加")
+        f.write('\n' + ' 没有网络，额外添加')
         for i in range(len(staff_old_night_B_inorder)):  # 按照夜班数量的从小到大安排网络岗位值班,并确保当天值班人员不是一个岗位的
             if staff_old_night_B_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
                 continue
             else:
-
                 # added by songml for duty_women_cnt 20181214
-                if staff_old_night_B_inorder[i] in list_women:
+                if staff_old_night_B_inorder[i] in list_women:  # 如果是女生
 
-                    if duty_women_cnt == 2:
-                        f.write('\n' + ' 网络选人中 且这次选中的人为女生 但女生数已为2 跳过')
+                    if duty_women_cnt == 2:  # 女生数为2 ，直接跳过
+                        f.write('\n' + ' 网络选人中 且这次选中的人为女生 但女生数已为2 跳过:'
+                                + staff_old_night_B_inorder[i])
                         continue
-                    else:
+                    else:  # 女生数不为2
                         duty.append(staff_old_night_B_inorder[i])
                         f.write('\n' + '选中的女生为：' + staff_old_night_B_inorder[i])
                         duty_women_cnt += 1
+                        if staff_old_night_B_inorder[i] in list_new:  # 女生数不为2，如果新人，之前没有新人，新人计数器添加1
+                            f.write('\n' + '网络选中的新人为：' + staff_old_night_B_inorder[i])
+                            duty_new_cnt += 1
                         break
                 # added by songml for duty_women_cnt 20181214
-                else:
+                else:  # 不是女生
                     duty.append(staff_old_night_B_inorder[i])
+                    if staff_old_night_B_inorder[i] in list_new:  # 不是女生，且之前没有新人，所以新人计数直接添加1
+                        f.write('\n' + '网络选中的新人、非女生为：' + staff_old_night_B_inorder[i])
+                        duty_new_cnt += 1
                     break
                 # break
     f.write('\n' + '选过网络岗位后女生人数===========：' + str(duty_women_cnt))
-    if (duty[0][0] != "C") and (duty[1][0] != "C"):
+    f.write('\n' + '选过网络岗位后新人数===========：' + str(duty_new_cnt))
+
+    if duty[0][0] != "C":
         print("没有应用，额外添加")
+        f.write('\n' + ' 没有应用，额外添加')
+        f.write('\n'+str(staff_old_night_C_inorder))
+        f.write('\n' + str(LastMateList))
         for i in range(len(staff_old_night_C_inorder)):  # 按照夜班数量的从小到大安排网络岗位值班,并确保当天值班人员不是一个岗位的
             if staff_old_night_C_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
+                #if staff_old_night_C_inorder[i] in LastMateListForApp:  # 判断和上2日值班人员是否重复 added by songml 20190514
                 continue
             else:
 
                 # added by songml for duty_women_cnt 20181214
-                if staff_old_night_C_inorder[i] in list_women:
-                    if duty_women_cnt == 2:
-                        f.write('\n' + ' 应用选人中 且这次选中的人为女生 但女生数已为2 跳过')
+                if staff_old_night_C_inorder[i] in list_women:  # 如果选中了女生
+                    if duty_women_cnt == 2:  # 女生数已经为2
+                        f.write('\n' + ' 应用选人中 且这次选中的人为女生 但女生数已为2 跳过 :' + staff_old_night_C_inorder[i])
                         continue
+                    else:  # 女生数小于2
+                        if staff_old_night_C_inorder[i] in list_new:  # 选中的人为新人
+                            if duty_new_cnt == 0:  # 女生小于2人 且 新人数为0 添加并计数
+                                duty.append(staff_old_night_C_inorder[i])
+                                f.write('\n' + '应用选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_C_inorder[i])
+                                duty_women_cnt += 1
+                                duty_new_cnt += 1
+                                break
+                            else:  # 女生小于2人 但新人数已经为1 直接跳过
+                                f.write('\n' + ' 应用选人中 且这次选中的人为女生 但女生数 < 2 但新人数超过1 跳过'
+                                        + staff_old_night_C_inorder[i])
+                                continue
+                        else:
+                            duty.append(staff_old_night_C_inorder[i])
+                            f.write('\n' + '应用选人中 选中的非新人女生为：' + staff_old_night_C_inorder[i] )
+                            duty_women_cnt += 1
+                            break
+                # added by songml for duty_women_cnt 20181214
+                else:  # 非女生
+                    if staff_old_night_C_inorder[i] in list_new:
+                        if duty_new_cnt == 0:  # 非女生 且为新人数 为 0  直接跳过
+                            duty.append(staff_old_night_C_inorder[i])
+                            f.write('\n' + '选中的新人(非女生)为：' + staff_old_night_C_inorder[i] + ' 新人数：'
+                                    + str(duty_women_cnt))
+                            duty_new_cnt += 1
+                            break
+                        else:
+                            f.write('\n' + ' 应用选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
+                                    + staff_old_night_C_inorder[i])
+                            continue
                     else:
                         duty.append(staff_old_night_C_inorder[i])
-                        f.write('\n' + '选中的女生为：' + staff_old_night_C_inorder[i])
-                        duty_women_cnt += 1
                         break
-                # added by songml for duty_women_cnt 20181214
-                else:
-                    duty.append(staff_old_night_C_inorder[i])
-                    break
                 # break
     ##############转换为新的值班表，列表形式############
-    f.write('\n' + '选过主岗、新人、网络、应用的新版值班表：' + str(duty))
+    f.write('\n' + '选过主岗、网络(可能是新人)、应用(可能是新人)的新版值班表：' + str(duty))
+    # 值班组都包含哪些岗位，提取出来
     for i in range(len(duty)):
         duty_group[i] = duty[i][0]
     ###################################################
     f.write('\n' + '选过应用岗位后女生人数===========：' + str(duty_women_cnt))
+    f.write('\n' + '选过应用岗位后新人数===========：' + str(duty_new_cnt))
+    f.write('\n' + '上3个工作日的值班人员===========：' + str(LastMateList))
+    f.write('\n' + '除去网络和应用外的其他岗位人员===========：' + str(staff_ChiefAndOtherOld_inorder))
     # 以下为除去网络和应用外的其他岗位排班
     for m in range(len(duty), 6):
         for i in range(len(staff_ChiefAndOtherOld_inorder)):
             if staff_ChiefAndOtherOld_inorder[i] in LastMateList:  # 判断和上一日是否重复
                 continue
             else:
+                # 值班组里已包含当前人所属岗位
                 if staff_ChiefAndOtherOld_inorder[i][0] in duty_group:
                     continue
-                #主岗人数大于2人就不选主岗了
+                # 值班组里未包含当前人所属岗位
                 else:
                     if staff_ChiefAndOtherOld_inorder[i] in list_main:
-                        if chief_amout==1:
+                        if chief_amout == 1:
                             if staff_ChiefAndOtherOld_inorder[i] not in list_women:
                                 duty.append(staff_ChiefAndOtherOld_inorder[i])
                                 duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
+                                f.write('\n' + ' 选中主岗，已有1个主岗 且这次选中的人为男生为: '
+                                        + staff_ChiefAndOtherOld_inorder[i])
                                 chief_amout += 1
                                 break
                             else:
                                 if duty_women_cnt == 2:
-                                    f.write('\n' + ' 已选了2个主岗 且这次选的人为女生 但女生数已为2 跳过')
+                                    f.write('\n' + ' 选中主岗，已有1个主岗 且这次选的人为女生 但女生数已为2 跳过')
                                     continue
                                 else:
                                     duty.append(staff_ChiefAndOtherOld_inorder[i])
                                     duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
-                                    f.write('\n' + '选中的女生为：' + staff_ChiefAndOtherOld_inorder[i])
+                                    f.write('\n' + '选中主岗，已有1个主岗，女生数<1 选中的女生为：'
+                                            + staff_ChiefAndOtherOld_inorder[i])
                                     chief_amout += 1
                                     duty_women_cnt += 1
                                     break
@@ -808,24 +862,58 @@ def PaiBan(StartDate, Weekday, Specialday):
                             continue
                     else:
                         # added by songml for duty_women_cnt 20181214
-                        if staff_ChiefAndOtherOld_inorder[i] not in list_women:
-                            duty.append(staff_ChiefAndOtherOld_inorder[i])
-                            duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
-                            break
-                        else:
-                            if duty_women_cnt == 2:
-                                f.write('\n' + ' 除去网络和应用外选人 非主岗，且这次选中的人为女生 但女生数已为2 跳过')
-                                continue
+                        if staff_ChiefAndOtherOld_inorder[i] not in list_women:  # 选中的不是女生
+                            if staff_ChiefAndOtherOld_inorder[i] in list_new:
+                                if duty_new_cnt == 0:
+                                    duty.append(staff_ChiefAndOtherOld_inorder[i])
+                                    duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
+                                    duty_new_cnt += 1
+                                    f.write('\n' + ' 除去网络和应用外，非主岗，新人数为0，男生新人为： '
+                                            + staff_ChiefAndOtherOld_inorder[i])
+                                    break
+                                else:
+                                    f.write('\n' + ' 除去网络和应用外，非主岗，新人数已经为1，跳过： '
+                                            + staff_ChiefAndOtherOld_inorder[i])
+                                    continue
                             else:
                                 duty.append(staff_ChiefAndOtherOld_inorder[i])
                                 duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
-                                f.write('\n' + '选中的女生为：' + staff_ChiefAndOtherOld_inorder[i])
-                                duty_women_cnt += 1
+                                f.write('\n' + ' 除去网络和应用外，非主岗，男生老员工： '
+                                        + staff_ChiefAndOtherOld_inorder[i])
                                 break
+                        else:  # 选中的人为女生
+                            if duty_women_cnt == 2:
+                                f.write('\n' + ' 除去网络和应用外选人 非主岗，且这次选中的人为女生 但女生数已为2 跳过'
+                                        + staff_ChiefAndOtherOld_inorder[i])
+                                continue
+                            else:  # 女生数不为2
+                                if staff_ChiefAndOtherOld_inorder[i] in list_new:
+                                    if duty_new_cnt == 0:
+                                        duty.append(staff_ChiefAndOtherOld_inorder[i])
+                                        duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
+                                        f.write('\n' + '除去网络和应用外选人 非主岗，选中的女生新人，女生数<2 新人数0,为：'
+                                                + staff_ChiefAndOtherOld_inorder[i])
+                                        duty_women_cnt += 1
+                                        duty_new_cnt += 1
+                                        break
+                                    else:
+                                        f.write('\n' + '除去网络和应用外选人 非主岗，选中的女生新人，女生数<2 新人数1,跳过 ：'
+                                                + staff_ChiefAndOtherOld_inorder[i])
+                                        continue
+                                else:
+                                    duty.append(staff_ChiefAndOtherOld_inorder[i])
+                                    duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
+                                    f.write('\n' + '除去网络和应用外选人 非主岗，选中的女生，老人，女生数<2 添加此人为：'
+                                            + staff_ChiefAndOtherOld_inorder[i])
+                                    duty_women_cnt += 1
+                                    break
                         # added by songml for duty_women_cnt 20181214
     f.write('\n' + '选过除去网络和应用外的其他岗位排班后女生人数===========：' + str(duty_women_cnt))
+    f.write('\n' + '选过除去网络和应用外的其他岗位排班后：' + str(duty))
+    f.write('\n' + '上3个工作日的值班人员===========：' + str(LastMateList))
+    f.write('\n' + '除去网络和应用外的其他岗位人员===========：' + str(staff_ChiefAndOtherOld_inorder))
     #如果不满足6人值班要求，空余值班位置由主岗补上，此时主岗人数大于2人
-    if len(duty)<6:
+    if len(duty) < 6:
         for m in range(len(duty), 6):
             for i in range(len(staff_ChiefAndOtherOld_inorder)):
                 if staff_ChiefAndOtherOld_inorder[i] in LastMateList:  # 判断和上一日是否重复
@@ -840,38 +928,73 @@ def PaiBan(StartDate, Weekday, Specialday):
                                 if staff_ChiefAndOtherOld_inorder[i] not in list_women:
                                     duty.append(staff_ChiefAndOtherOld_inorder[i])
                                     duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
+                                    f.write('\n' + '<6 选中了男生主岗为:' + staff_ChiefAndOtherOld_inorder[i])
                                     chief_amout += 1
                                     break
                                 else:
                                     if duty_women_cnt == 2:
-                                        f.write('\n' + '<6 选中了主岗且 选中的人为女生 但女生数已为2 跳过')
+                                        f.write('\n' + '<6 选中了女生主岗 但女生数已为2 跳过' + staff_ChiefAndOtherOld_inorder[i])
                                         continue
                                     else:
                                         duty.append(staff_ChiefAndOtherOld_inorder[i])
                                         duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
-                                        f.write('\n' + '选中的女生为：' + staff_ChiefAndOtherOld_inorder[i])
+                                        f.write('\n' + '<6 选中了女生主岗 但女生数小于2：' + staff_ChiefAndOtherOld_inorder[i])
                                         chief_amout += 1
                                         duty_women_cnt += 1
                                         break
 
                             else:
+                                f.write('\n' + '<6 选中了主岗 但主岗数大于2：' + staff_ChiefAndOtherOld_inorder[i])
                                 continue
-                        else:
-                            if staff_ChiefAndOtherOld_inorder[i] not in list_women:
-                                duty.append(staff_ChiefAndOtherOld_inorder[i])
-                                duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
-                                break
-                            else:
-                                if duty_women_cnt == 2:
-                                    f.write('\n' + '<6 选中人没有主岗，选中的人为女生 但女生数已为2 跳过')
-                                    continue
+                        else:  # 选中的人非主岗
+                            if staff_ChiefAndOtherOld_inorder[i] not in list_women:  # 选中的人为男生
+                                if staff_ChiefAndOtherOld_inorder[i] in list_new:   # 选中的人是新人
+                                    if duty_new_cnt == 0:
+                                        duty.append(staff_ChiefAndOtherOld_inorder[i])
+                                        duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
+                                        duty_new_cnt += 1
+                                        f.write('\n' + '<6 选中的非主岗男生(选中时新人数0）为：'
+                                                + staff_ChiefAndOtherOld_inorder[i])
+                                        break
+                                    else:
+                                        f.write('\n' + '<6 选中的非主岗男生(选中时新人数1）为：'
+                                                + staff_ChiefAndOtherOld_inorder[i])
+                                        continue
                                 else:
                                     duty.append(staff_ChiefAndOtherOld_inorder[i])
                                     duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
-                                    f.write('\n' + '选中的女生为：' + staff_ChiefAndOtherOld_inorder[i])
-                                    duty_women_cnt += 1
+                                    f.write('\n' + '<6 选中的非主岗男生，非新人为：'
+                                            + staff_ChiefAndOtherOld_inorder[i])
                                     break
+                            else:
+                                if duty_women_cnt == 2:
+                                    f.write('\n' + '<6 选中人非主岗女生 但女生数已为2 跳过'
+                                            + staff_ChiefAndOtherOld_inorder[i])
+                                    continue
+                                else:  # 女生数<2
+                                    if staff_ChiefAndOtherOld_inorder[i] in list_new:
+                                        if duty_new_cnt == 0:
+                                            duty.append(staff_ChiefAndOtherOld_inorder[i])
+                                            duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
+                                            f.write('\n' + '<6 选中的非主岗女生(选中时新人数0)为：'
+                                                    + staff_ChiefAndOtherOld_inorder[i])
+                                            duty_women_cnt += 1
+                                            duty_new_cnt += 1
+                                            break
+                                        else:
+                                            continue
+                                            f.write('\n' + '<6 选中的非主岗女生(选中时新人数1)，跳过'
+                                                    + staff_ChiefAndOtherOld_inorder[i])
+                                    else:  # 选中的人非新人女生，先中时女生数<2
+                                        duty.append(staff_ChiefAndOtherOld_inorder[i])
+                                        duty_group.append(staff_ChiefAndOtherOld_inorder[i][0])
+                                        f.write('\n' + '<6 选中的非主岗女生,非新人，选中时女生数<2为：'
+                                                + staff_ChiefAndOtherOld_inorder[i])
+                                        duty_women_cnt += 1
+                                        break
+
     f.write('\n' + '选择补齐6个人后女生人数===========：' + str(duty_women_cnt))
+    f.write('\n' + '选择补齐6个人后新人人数===========：' + str(duty_new_cnt))
 
     print("新版值班表的人员结果，不含岗位:", duty)
     f.write('\n' + '今日主岗人数：' + str(chief_amout))
@@ -912,8 +1035,10 @@ def PaiBan(StartDate, Weekday, Specialday):
     ##############值班经理选择
     manager = []
     manager_dict = {}
-    # 值班经理不是新人，不是河口值班人员
+    # 值班经理不是新人，不是河口值班人员,不是应用那两个新人 modified by songml 20190514
     for i in duty:
+        #if (i not in list_new) and (i != duty_result[1]):
+        #值班经理不能是应用新人(不满2年),2个应用新人临时添加到应用老人，要不然不够排了 modified by songml 20190514
         if (i not in list_new) and (i != duty_result[1]):
             manager.append(i)
 
