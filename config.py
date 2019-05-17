@@ -39,7 +39,7 @@ list_main = ['A1', 'A2', 'B1', 'C1', 'D1', 'D2', 'E1', 'F1', 'G1', 'H1', 'I1']# 
 # 新人列表
 list_new = ['H4', 'H3', 'I2', 'I3', 'C3', 'C6', 'C7']
 # 女员工列表
-list_women = ['F2', 'F4', 'G1', 'G2', 'I2', 'I3']
+list_women = ['F2', 'F4', 'G1', 'G2', 'I2', 'I3', 'C8']
 # 非主岗老员工
 list_group_A = ['A3', 'A4', 'A5', 'A6']
 list_group_B = ['B2', 'B3', 'B4', 'B5', 'B6']
