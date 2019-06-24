@@ -34,3 +34,12 @@ for i in Adic.keys():
 print("")
 newList = sorted(list, key=lambda x: (x[1], x[2]))
 print(">>>>>>>list is ", newList)
+
+
+
+a="test"
+b="test"
+if a is not b:
+    print("not")
+else:
+    print("yes")
