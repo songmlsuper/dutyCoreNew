@@ -103,6 +103,10 @@ def PaiBan(StartDate, Weekday, Specialday):
     targetLine_Id = TotalLines[0]
     targetLine_Name = TotalLines[1]
 
+    # added by songml 20190624
+    targetLine_hekou_mon = TotalLines[-8]  # 周一节假日后河口值白班
+    # added by songml 20190624
+
     # added by songml 20190126
     targetLine_small_fri = TotalLines[-7]  # 周五夜班
     # added by songml 20190126
@@ -187,6 +191,23 @@ def PaiBan(StartDate, Weekday, Specialday):
     print("参与排班人员总数：", total)
     f.write('\n' + '参与排班人员总数：' + str(total))
     f.write("参与排班姓名表：" + str(allmemberList))
+
+    #河口白班周一计数器
+    staff_hekou_mon = {}
+    HistoryDate_hekou_mon = []
+    tmpIdx = 0
+    for i in range(1, memLimitNum + 1):
+        name = targetLine_Name.split(',')[i]
+        if name != "none":
+            HistoryDate_hekou_mon.append(int(targetLine_hekou_mon.split(',')[i]))
+            print(map[tmpIdx] + "============ " + str(HistoryDate_hekou_mon[tmpIdx]))
+            f.write(map[tmpIdx] + "============ " + str(HistoryDate_hekou_mon[tmpIdx]))
+            staff_hekou_mon.update({map[tmpIdx]: HistoryDate_hekou_mon[tmpIdx]})
+            tmpIdx += 1
+    print("周一河口白班值班的历史计数器:", staff_hekou_mon)
+    f.write('\n' + '周一河口白班值班的历史计数器：' + str(staff_hekou_mon))
+
+    #周一小夜班计数器
     staff_small_fri = {}
     HistoryDate_small_fri = []
     tmpIdx = 0
@@ -406,6 +427,9 @@ def PaiBan(StartDate, Weekday, Specialday):
     if (Specialday == 2) or (Specialday == 0 and Weekday == 1):
         # 按照夜班总数及周一节假日首日进行排序 开始 20190123 by songml end
         # 遍历主岗哈希，结合map,生成新的基于周一夜班的哈希，总共生成3个列表
+
+        # 只要是周一或节假日后第一天，河口白班都需要到大厦协助启停检查，为避免总轮到，添加河口白班周一及节假日后首日
+        # 计数器
         ### new added
         if Weekday == 5:
             tmplist = []
@@ -1111,19 +1135,32 @@ def PaiBan(StartDate, Weekday, Specialday):
     hekouExcptList = LastMateList_1 + duty
     if Date_1 in holiday_lastday:
         hekouExcptList = duty
-
     tmplistHekou = []
-    for staff in staff_hekou_day.keys():
-        tmplistHekou.append((staff_hekou_day.get(staff), staff))
+    # 河口值班排序添加计数器
+    if (Specialday == 2) or (Specialday == 0 and Weekday == 1):
+        # 只要是周一或节假日后第一天，河口白班都需要到大厦协助启停检查，为避免总轮到，添加河口白班周一及节假日后首日计数器
+        for staff in staff_hekou_day.keys():
+            tmplistHekou.append((staff_hekou_day.get(staff), staff_hekou_mon.get(staff), staff))
+            hekou_day_inorder = sorted(tmplistHekou, key=lambda x: (x[0], x[1]))
+        f.write('\n' + '+++ 完整版排序列表 ===== 应用岗位列表，按值夜班数量(及周五夜班数量进行排序)从小到大排序：' + str(staff_old_night_C_inorder))
 
-    hekou_day_inorder = sorted(tmplistHekou, key=lambda x: (x[0]))
+        ### new added
+        for i in range(len(hekou_day_inorder)):
+            hekou_day_inorder[i] = hekou_day_inorder[i][2]
+        f.write('\n' + '+++ 完整版排序列表=====河口白班，按河口值班数量从小到大排序：' + str(hekou_day_inorder))
 
-    ### new added
-    for i in range(len(hekou_day_inorder)):
-        # 值班人员变为数组第2个参数
-        hekou_day_inorder[i] = hekou_day_inorder[i][1]
+    else:#不是周一或节假日后第一天
+        for staff in staff_hekou_day.keys():
+            tmplistHekou.append((staff_hekou_day.get(staff), staff))
 
-    f.write('\n' + '+++ 完整版排序列表=====河口白班，按河口值班数量从小到大排序：' + str(hekou_day_inorder))
+        hekou_day_inorder = sorted(tmplistHekou, key=lambda x: (x[0]))
+
+        ### new added
+        for i in range(len(hekou_day_inorder)):
+            # 值班人员变为数组第2个参数
+            hekou_day_inorder[i] = hekou_day_inorder[i][1]
+
+        f.write('\n' + '+++ 完整版排序列表=====河口白班，按河口值班数量从小到大排序：' + str(hekou_day_inorder))
 
     # 河口选人，把上一个夜盘及今天的值班人员排除后选择，选择到第一个即退出
     for i in range(len(hekou_day_inorder)):
@@ -1283,7 +1320,7 @@ def PaiBan(StartDate, Weekday, Specialday):
             staff_small_mon[duty_result[5]] += 1
             staff_small_mon[duty_result[6]] += 1
             ##########################################
-
+        staff_hekou_mon[duty_result[1]] += 1
             ##########################################
     # 其他正常工作日
     elif Specialday == 0:
@@ -1322,6 +1359,8 @@ def PaiBan(StartDate, Weekday, Specialday):
             ##############计数器分别加1####################
             # 河口计数器
             staff_hekou[duty_result[1]] += 1
+            # 正常周一河口白班计数器
+            staff_hekou_mon[duty_result[1]] += 1
             # 值班经理计数器
             staff_manager[duty_result[2]] += 1
             # 大夜班计数器

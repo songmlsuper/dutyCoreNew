@@ -21,17 +21,6 @@ holiday_nextday = ["20180925","20181008","20190102", "20190211", "20190408","201
 
 
 #和宋老师对接的转化字典
-SongDict =   { 'A1':'hw', 'A2':'dzt', 'A3':'srk', 'A4':'zyh', 'A5':'bk', 'A6':'sq', \
-               'B1':'spc', 'B2':'wxl', 'B3':'yhr', 'B4':'wmy', 'B5':'yl', 'B6':'czh', 'H4':'yanglei', \
-               'C1':'wyj', 'C2':'lph', 'C3':'lsj', 'C4':'zky', 'C5':'cj', 'C6':'lyc', 'C7':'fjk',  \
-               'D1':'zn', 'D2':'zmm', 'D3':'xyj', 'D4':'wxlv', \
-               'E1':'dxj', 'E2':'gxy', 'E3':'zxs', 'E4':'gzq', \
-               'F1':'wel', 'F2':'lal', 'F3':'sml', 'F4':'czlv', 'F5':'fs',\
-               'G1':'yqq', 'C8':'sxm', \
-               'H1':'dlm', 'H2':'zc', 'H3':'zyf', \
-               'I1':'wsg', 'I2':'ccm', 'I3':'ht' }#, 20190311 by songml#'I4':'yxl', \
-               #'J1':'wx'} #20190311 by songml
-
 SongDictNew = {'A1': 'hw', 'A2': 'srk', 'A3': 'zyh', 'A4': 'bk', 'A5': 'dzt', 'A6': 'sq', 'A7': 'yanglei', 'A8': 'none',
                'A9': 'none', 'A10': 'none', 'A11': 'none', 'A12': 'none', 'A13': 'none', 'A14': 'none', 'A15': 'none',
                'B1': 'spc', 'B2': 'yhr', 'B3': 'wmy', 'B4': 'czh', 'B5': 'wxl', 'B6': 'yl', 'B7': 'sml', 'B8': 'none',
