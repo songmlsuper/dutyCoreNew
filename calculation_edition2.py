@@ -24,6 +24,7 @@
 ## 20190620  宋明霖  选定河口值班人员（主岗、中层、春苗、韩婷除外），随机乱序，排序；不在昨天、今天（五人）之中，选择河口计数器最小的河口值班
 ##                    但是河口的夜班计数、周一及节假日后首日的计数、周五的计数均不再添加1；计划调整计数模式，每组15人
 ##                    已存在的人员在前，后面没分配的为none，补齐15人，这样配置文件好调整
+## 20190625  宋明霖   添加河口白班节假日后首日计数器，添加夜盘值班监控组排他，添加夜盘值班OA组排他，添加夜盘值班总监助理排他
 import csv
 import random
 import config2
@@ -80,15 +81,23 @@ def PaiBan(StartDate, Weekday, Specialday):
     print("大前天的值班人员", LastMateList_3)
     f.write('\n' + '3天前的值班人员：' + str(LastMateList_3))
 
-    if Date_1 in holiday_lastday:
-        LastMateList =  LastMateList_2 + LastMateList_3
-    elif Date_2 in holiday_lastday:
-        LastMateList = LastMateList_1 + LastMateList_3
-    elif Date_3 in holiday_lastday:
-        LastMateList = LastMateList_1 + LastMateList_2
-    else:
-        LastMateList = LastMateList_1 + LastMateList_2 + LastMateList_3
-
+    # 删除掉河口的人，因为河口是白班了，不应该把河口值班排除在外进行选择
+    LastMateList_1.remove(LastMateList_1[0])
+    LastMateList_2.remove(LastMateList_2[0])
+    LastMateList_3.remove(LastMateList_3[0])
+    f.write('\n' + '昨天除去河口的值班人员：' + str(LastMateList_1))
+    f.write('\n' + '前天除去河口的值班人员：' + str(LastMateList_2))
+    f.write('\n' + '大前天除去河口的值班人员：' + str(LastMateList_3))
+    # if Date_1 in holiday_lastday:
+    #     LastMateList =  LastMateList_2 + LastMateList_3
+    # elif Date_2 in holiday_lastday:
+    #     LastMateList = LastMateList_1 + LastMateList_3
+    # elif Date_3 in holiday_lastday:
+    #     LastMateList = LastMateList_1 + LastMateList_2
+    # else:
+    #     LastMateList = LastMateList_1 + LastMateList_2 + LastMateList_3
+    # 节前最后一天也纳入，排除选项，否则会出现节前值班，节后第一天再次值班
+    LastMateList = LastMateList_1 + LastMateList_2 + LastMateList_3
     print("前3天的值班人员：",LastMateList)
     f.write('\n' + '前3天的值班人员：' + str(LastMateList))
 
@@ -118,6 +127,10 @@ def PaiBan(StartDate, Weekday, Specialday):
     targetLine_small = TotalLines[-2]  # 小夜班计数器
 
     # added by songml 20190126
+    targetLine_hekou_mon = "".join(targetLine_hekou_mon.split())  # 去掉无效字符
+    # added by songml 20190126
+
+    # added by songml 20190126
     targetLine_small_fri = "".join(targetLine_small_fri.split())  # 去掉无效字符
     # added by songml 20190126
 
@@ -141,19 +154,15 @@ def PaiBan(StartDate, Weekday, Specialday):
 
     # 女员工列表
     list_women = config2.list_women
-    # 女员工人数
-    women_amount = len(list_women)
-    # 非主岗老员工
-    list_group_A = config2.list_group_A
-    list_group_B = config2.list_group_B
-    list_group_C = config2.list_group_C
-    list_group_D = config2.list_group_D
-    list_group_E = config2.list_group_E
 
     # 监控组
     list_moni = config2.list_moni
     # OA组
     list_oa = config2.list_oa
+    # 总监助理组
+    list_da = config2.list_da
+    # 不去河口的
+    list_not_hekou = config2.list_not_hekou
 
     # 初始化每天的值班名单
     duty = []
@@ -200,8 +209,8 @@ def PaiBan(StartDate, Weekday, Specialday):
         name = targetLine_Name.split(',')[i]
         if name != "none":
             HistoryDate_hekou_mon.append(int(targetLine_hekou_mon.split(',')[i]))
-            print(map[tmpIdx] + "============ " + str(HistoryDate_hekou_mon[tmpIdx]))
-            f.write(map[tmpIdx] + "============ " + str(HistoryDate_hekou_mon[tmpIdx]))
+            # print(map[tmpIdx] + "============ " + str(HistoryDate_hekou_mon[tmpIdx]))
+            # f.write(map[tmpIdx] + "============ " + str(HistoryDate_hekou_mon[tmpIdx]))
             staff_hekou_mon.update({map[tmpIdx]: HistoryDate_hekou_mon[tmpIdx]})
             tmpIdx += 1
     print("周一河口白班值班的历史计数器:", staff_hekou_mon)
@@ -215,8 +224,8 @@ def PaiBan(StartDate, Weekday, Specialday):
         name = targetLine_Name.split(',')[i]
         if name != "none":
             HistoryDate_small_fri.append(int(targetLine_small_fri.split(',')[i]))
-            print(map[tmpIdx] + "============ " + str(HistoryDate_small_fri[tmpIdx]) )
-            f.write(map[tmpIdx] + "============ " + str(HistoryDate_small_fri[tmpIdx]) )
+            # print(map[tmpIdx] + "============ " + str(HistoryDate_small_fri[tmpIdx]) )
+            # f.write(map[tmpIdx] + "============ " + str(HistoryDate_small_fri[tmpIdx]) )
             staff_small_fri.update({map[tmpIdx]: HistoryDate_small_fri[tmpIdx]})
             tmpIdx += 1
     print("周五夜班值班的历史计数器:", staff_small_fri)
@@ -409,8 +418,12 @@ def PaiBan(StartDate, Weekday, Specialday):
     tmp_hekou_arr = config2.list_group_A + config2.list_group_B + config2.list_group_C + config2.list_group_D + config2.list_group_E
     for mainMem in staff_main_arr:
         tmp_hekou_arr.remove(mainMem)
+    for da in list_da:
+        tmp_hekou_arr.remove(da)
+    for nothekou in list_not_hekou:
+        tmp_hekou_arr.remove(nothekou)
     #女王欣不参加夜盘，但参加河口值班
-    tmp_hekou_arr.append('D9') # 女王欣参加河口白班值班
+    tmp_hekou_arr.append('D10') # 女王欣参加河口白班值班
     random.shuffle(tmp_hekou_arr)
     staff_hekou_day = {}
     for staff in tmp_hekou_arr:
@@ -805,14 +818,41 @@ def PaiBan(StartDate, Weekday, Specialday):
                     if staff_old_night_B_inorder[i] in list_main:  # 如果是主岗，主岗计数器添加1
                         f.write('\n' + '网络选中主岗、非女生为：' + staff_old_night_B_inorder[i])
                         main_cnt += 1
-                    if staff_old_night_B_inorder[i] in list_moni:  # 有监控岗位的人
-                        f.write('\n' + '网络选中监控岗位的人、非女生为：' + staff_old_night_B_inorder[i])
-                        moni_cnt += 1
                     break
                 # break
     f.write('\n' + '选过网络岗位后女生人数===========：' + str(duty_women_cnt))
     f.write('\n' + '选过网络岗位后新人数===========：' + str(duty_new_cnt))
     f.write('\n' + '选过网络主岗人数===========：' + str(main_cnt))
+    #选择完网络后 看是否选择了一个总监助理，是否选择了具有监控属性的人
+
+
+    for i in range(len(duty)):
+        if duty[i][0] == "B":
+            # f.write('\n当前为============= ' + duty[i])
+            if duty[i] in list_da:#网络组选中了总监助理后，与主机，数据库的总监助理互斥
+                for da in list_da:
+                    if da in staff_old_night_A_inorder:
+                        # f.write('\n总监主机删除============= '+ da)
+                        staff_old_night_A_inorder.remove(da)
+                    if da in staff_old_night_D_inorder:
+                        # f.write('\n数据库主机删除============= ' + da)
+                        staff_old_night_D_inorder.remove(da)
+                f.write('\n' + '选择了一个总监助理后========主机组===：' + str(staff_old_night_A_inorder))
+                f.write('\n' + '选择了一个总监助理后========数据库组===：' + str(staff_old_night_D_inorder))
+            if duty[i] in list_moni: #网络组选中一个人有监控组属性后，与数据库组中监控的人互斥
+                for moni in list_moni:
+                    # f.write('\n当前为里面============= ' + duty[i] + ' ===== ' + moni)
+                    if moni in staff_old_night_C_inorder:
+                        # f.write('\n应用监控删除============= ' + moni)
+                        staff_old_night_C_inorder.remove(moni)
+                    if moni in staff_old_night_D_inorder:
+                        # f.write('\n数据库监控删除============= ' + moni)
+                        staff_old_night_D_inorder.remove(moni)
+                f.write('\n' + '选择了监控组属性的人后========应用组除去监控属性的人，剩余的人===：' + str(staff_old_night_C_inorder))
+                f.write('\n' + '选择了监控组属性的人后========数据库组除去监控属性的人，剩余的人===：' + str(staff_old_night_D_inorder))
+            break
+
+
 
     if duty[0][0] != "C":
         print("没有应用，额外添加")
@@ -821,7 +861,6 @@ def PaiBan(StartDate, Weekday, Specialday):
         f.write('\n' + str(LastMateList))
         for i in range(len(staff_old_night_C_inorder)):  # 按照夜班数量的从小到大安排网络岗位值班,并确保当天值班人员不是一个岗位的
             if staff_old_night_C_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
-                #if staff_old_night_C_inorder[i] in LastMateListForApp:  # 判断和上2日值班人员是否重复 added by songml 20190514
                 continue
             else:
 
@@ -862,16 +901,23 @@ def PaiBan(StartDate, Weekday, Specialday):
                             f.write('\n' + ' 应用选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
                                     + staff_old_night_C_inorder[i])
                             continue
-                    else: #不是新人，男生
+                    else:#非新人
                         duty.append(staff_old_night_C_inorder[i])
                         if staff_old_night_C_inorder[i] in list_main:  # 如果是主岗，主岗计数器添加1
                             f.write('\n' + '应用选中主岗、非女生为：' + staff_old_night_C_inorder[i])
                             main_cnt += 1
-
                         break
                 # break
     ##############转换为新的值班表，列表形式############
     f.write('\n' + '选过主岗、网络(可能是新人)、应用(可能是新人)的新版值班表：' + str(duty))
+    for i in range(len(duty)):
+        if duty[i][0] == "C":
+            if duty[i] in list_moni: #网络组选中一个人有监控组属性后，与数据库组中监控的人互斥
+                for moni in list_moni:
+                    if moni in staff_old_night_D_inorder:
+                        staff_old_night_D_inorder.remove(moni)
+                f.write('\n' + '应用选择了监控组属性的人后========数据库组除去监控属性的人，剩余的人===：' + str(staff_old_night_C_inorder))
+            break
 
     ######选择主机岗位的人员  20190618 by songml #######################
     if duty[0][0] != "A":
@@ -914,8 +960,6 @@ def PaiBan(StartDate, Weekday, Specialday):
                             f.write('\n' + '主机选人中，选中的新人(非女生)为：' + staff_old_night_A_inorder[i] + ' 新人数：'
                                     + str(duty_women_cnt))
                             duty_new_cnt += 1
-                            if staff_old_night_A_inorder[i] in list_oa:
-                                oa_cnt += 1
                             break
                         else:
                             f.write('\n' + ' 主机选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
@@ -924,8 +968,6 @@ def PaiBan(StartDate, Weekday, Specialday):
                     else:
                         if staff_old_night_A_inorder[i] not in list_main:
                             duty.append(staff_old_night_A_inorder[i])
-                            if staff_old_night_A_inorder[i] in list_oa:
-                                oa_cnt += 1
                             break
                         else:
                             if main_cnt < 3:
@@ -939,6 +981,19 @@ def PaiBan(StartDate, Weekday, Specialday):
                 # break
     ##############转换为新的值班表，列表形式############
     f.write('\n' + '选过主岗、网络(可能是新人)、应用(可能是新人)、主机（可能是新人）的新版值班表：' + str(duty))
+    for i in range(len(duty)):
+        if duty[i][0] == "A":
+            if duty[i] in list_da:
+                for da in list_da:
+                    if da in staff_old_night_D_list:
+                        staff_old_night_D_list.remove(da)
+                f.write('\n' + '主机选择了一个总监助理后========数据库组，除去总监剩余的人===：' + str(staff_old_night_D_list))
+            if duty[i] in list_oa: #主机组选中一个人有监控组属性后，与数据库组中监控的人互斥
+                for oa in list_oa:
+                    if oa in staff_old_night_D_inorder:
+                        staff_old_night_D_inorder.remove(oa)
+                f.write('\n' + '主机选择了OA属性的人后========数据库组除去OA属性的人，剩余的人===：' + str(staff_old_night_D_list))
+            break
 
     ######选择主机  20190618 by songml #######################
 
@@ -961,29 +1016,21 @@ def PaiBan(StartDate, Weekday, Specialday):
                     else:  # 女生数小于2
                         if staff_old_night_D_inorder[i] in list_new:  # 选中的人为新人
                             if duty_new_cnt == 0:  # 女生小于2人 且 新人数为0 添加并计数
-                                # 数据库组，有监控岗位的人情况进行判断
-                                if moni_cnt == 0 or (moni_cnt == 1 and staff_old_night_D_inorder[i] not in list_moni): #没有监控组的人直接添加
-                                    duty.append(staff_old_night_D_inorder[i])
-                                    f.write('\n' + '数据库选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_D_inorder[i])
-                                    duty_women_cnt += 1
-                                    duty_new_cnt += 1
-                                    break
-                                else: # 所选人中已有监控组的人 moni_cnt >=1
-                                    continue
-
+                                duty.append(staff_old_night_D_inorder[i])
+                                f.write('\n' + '数据库选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_D_inorder[i])
+                                duty_women_cnt += 1
+                                duty_new_cnt += 1
+                                break
                             else:  # 女生小于2人 但新人数已经为1 直接跳过
                                 f.write('\n' + ' 数据库选人中 且这次选中的人为女生 但女生数 < 2 但新人数超过1 跳过'
                                         + staff_old_night_D_inorder[i])
                                 continue
                         else:# 选中的人不为新人
                             if staff_old_night_D_inorder not in list_main: #不是主岗
-                                if moni_cnt == 0 or (moni_cnt == 1 and staff_old_night_D_inorder[i] not in list_moni):#爱玲，陈征
-                                    duty.append(staff_old_night_D_inorder[i])
-                                    f.write('\n' + '数据库选人中 选中的非新人女生为：' + staff_old_night_D_inorder[i] )
-                                    duty_women_cnt += 1
-                                    break
-                                else:
-                                    continue
+                                duty.append(staff_old_night_D_inorder[i])
+                                f.write('\n' + '数据库选人中 选中的非新人女生为：' + staff_old_night_D_inorder[i] )
+                                duty_women_cnt += 1
+                                break
                             else:
                                 if main_cnt < 3: #主岗人数小于3，这个人是女主岗 目前走不到这里
                                     duty.append(staff_old_night_D_inorder[i])
@@ -998,41 +1045,25 @@ def PaiBan(StartDate, Weekday, Specialday):
                 else:  # 非女生
                     if staff_old_night_D_inorder[i] in list_new:
                         if duty_new_cnt == 0:  # 非女生 且为新人数 为 0
-                            if moni_cnt == 0 or ( moni_cnt == 1 and staff_old_night_D_inorder[i] not in list_moni):  # 没有监控组的人直接添加
-                                if oa_cnt == 0 or (oa_cnt == 1 and staff_old_night_D_inorder[i] not in list_oa): # 张宇飞
-                                    duty.append(staff_old_night_D_inorder[i])
-                                    f.write('\n' + '数据库选人中，选中的新人(非女生)为：' + staff_old_night_D_inorder[i] + ' 新人数：'
-                                        + str(duty_women_cnt))
-                                    duty_new_cnt += 1
-                                    break
-                                else:
-                                    continue
-                            else:# 以后新人中，有可能有监控组的人
-                                continue
+                            duty.append(staff_old_night_D_inorder[i])
+                            f.write('\n' + '数据库选人中，选中的新人(非女生)为：' + staff_old_night_D_inorder[i] + ' 新人数：'
+                                + str(duty_women_cnt))
+                            duty_new_cnt += 1
+                            break
                         else:
                             f.write('\n' + ' 数据库选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
                                     + staff_old_night_D_inorder[i])
                             continue
-                    else: #不是新人
+                    else: #不是新人 非女生
                         if staff_old_night_D_inorder[i] not in list_main: #不是主岗
-                            if moni_cnt == 0 or (moni_cnt == 1 and staff_old_night_D_inorder[i] not in list_moni): #没有监控组的人直接添加
-                                if oa_cnt == 0 or (oa_cnt == 1 and staff_old_night_D_inorder[i] not in list_oa): # 张驰
-                                    duty.append(staff_old_night_D_inorder[i])
-                                    break
-                                else:
-                                    continue
-                            else:
-                                continue
+                            duty.append(staff_old_night_D_inorder[i])
+                            break
                         else:
                             if main_cnt < 3: #是主岗，且当前已选中的主岗数量小于3
-                                if moni_cnt == 0 or (
-                                        moni_cnt == 1 and staff_old_night_D_inorder[i] not in list_moni):  # 没有监控组的人直接添加 嵩哥
-                                    duty.append(staff_old_night_D_inorder[i])
-                                    main_cnt += 1
-                                    f.write('\n' + ' 数据库选人中 且这次选中的男主岗，有监控岗位属性为：' + staff_old_night_D_inorder[i])
-                                    break
-                                else:
-                                    continue
+                                duty.append(staff_old_night_D_inorder[i])
+                                main_cnt += 1
+                                f.write('\n' + ' 数据库选人中 且这次选中的男主岗' + staff_old_night_D_inorder[i])
+                                break
                             else:
                                 continue
                 # break
@@ -1203,6 +1234,8 @@ def PaiBan(StartDate, Weekday, Specialday):
         # 小夜班
         duty_result[5] = smallnight[0]
         duty_result[6] = smallnight[1]
+        # 河口计数器
+        staff_hekou[duty_result[1]] += 1
 
     # 节日后第一个交易日，全是大夜班，如果是周五，还是6个小夜班
     elif Specialday == 2:
@@ -1493,6 +1526,21 @@ def PaiBan(StartDate, Weekday, Specialday):
     result_date.append("日期")
     result_date.append(StartDate)
 
+    ########### 添加河口白班节后首日计数器
+    result_hekou_mon = []
+    result_hekou_mon.append("河口节后首日")
+
+    tmpIdx = 0
+    for memberid in range(len(allmemberList)):
+        if allmemberList[memberid] != "none":
+            tmpCnt = staff_hekou_mon.get(allmemberIdList[memberid])
+            result_hekou_mon.append(tmpCnt)
+            tmpIdx += 1
+        else:
+            result_hekou_mon.append(0)
+    ########## 添加河口白班节后首日计数器 added by songml 20190127
+
+
     ########### 添加周五的计数器 added by songml 20190127
     result_small_fri = []
     result_small_fri.append("周五夜班")
@@ -1586,6 +1634,9 @@ def PaiBan(StartDate, Weekday, Specialday):
     out = open("D:\\dutyInfo\\duty_counter.csv", "a", newline="")
     csv_writer = csv.writer(out, dialect="excel")
     csv_writer.writerow(result_date)
+    # 写入河口白班计数器
+    csv_writer.writerow(result_hekou_mon)
+    # 写入河口白班计数器
     # counter.csv中添加周五计数器的行 added by songml 20190127
     csv_writer.writerow(result_small_fri)
     # counter.csv中添加周五计数器的行 added by songml 20190127
@@ -1594,6 +1645,7 @@ def PaiBan(StartDate, Weekday, Specialday):
     csv_writer.writerow(result_manager)
     csv_writer.writerow(result_full_night)
     csv_writer.writerow(result_small)
+
     csv_writer.writerow(Record_all)
 
     out.close()

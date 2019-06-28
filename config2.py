@@ -19,39 +19,50 @@ holiday_lastday = ["20180921","20180928","20181228", "20190201", "20190404","201
 #节假日后一个交易日
 holiday_nextday = ["20180925","20181008","20190102", "20190211", "20190408","20190506", "20190610","20190916","20191008","20200102"]
 
+SongDict={'A1':'hw', 'A2':'dzt', 'A3':'srk', 'A4':'zyh', 'A5':'bk', 'A6':'sq', \
+           'B1':'spc', 'B2':'wxl', 'B3':'yhr', 'B4':'wmy', 'B5':'yl', 'B6':'czh', 'H4':'yanglei', \
+           'C1':'wyj', 'C2':'lph', 'C3':'lsj', 'C4':'zky', 'C5':'cj', 'C6':'lyc', 'C7':'fjk',  \
+           'D1':'zn', 'D2':'zmm', 'D3':'xyj', 'D4':'wxlv', \
+           'E1':'dxj', 'E2':'gxy', 'E3':'zxs', 'E4':'gzq', \
+           'F1':'wel', 'F2':'lal', 'F3':'sml', 'F4':'czlv', 'F5':'fs',\
+           'G1':'yqq', 'C8':'sxm', \
+           'H1':'dlm', 'H2':'zc', 'H3':'zyf', \
+           'I1':'wsg', 'I2':'ccm', 'I3':'ht' }#, 20190311 by songml#'I4':'yxl', \
 
 #和宋老师对接的转化字典
-SongDictNew = {'A1': 'hw', 'A2': 'srk', 'A3': 'zyh', 'A4': 'bk', 'A5': 'dzt', 'A6': 'sq', 'A7': 'yanglei', 'A8': 'none',
+SongDictNew = {'A1': 'hw', 'A2': 'srk', 'A3': 'zyh', 'A4': 'bk', 'A5': 'dzt', 'A6': 'sq', 'A7': 'yanglei', 'A8': 'hlf',
                'A9': 'none', 'A10': 'none', 'A11': 'none', 'A12': 'none', 'A13': 'none', 'A14': 'none', 'A15': 'none',
-               'B1': 'spc', 'B2': 'yhr', 'B3': 'wmy', 'B4': 'czh', 'B5': 'wxl', 'B6': 'yl', 'B7': 'sml', 'B8': 'none',
+               'B1': 'spc', 'B2': 'yhr', 'B3': 'wmy', 'B4': 'czh', 'B5': 'wxl', 'B6': 'yl', 'B7': 'sml', 'B8': 'wxq',
                'B9': 'none', 'B10': 'none', 'B11': 'none', 'B12': 'none', 'B13': 'none', 'B14': 'none', 'B15': 'none',
                'C1': 'wyj', 'C2': 'zky', 'C3': 'cj', 'C4': 'lmj', 'C5': 'fjk', 'C6': 'lyc', 'C7': 'lsj', 'C8': 'sxm',
-               'C9': 'none', 'C10': 'none', 'C11': 'none', 'C12': 'none', 'C13': 'none', 'C14': 'none', 'C15': 'none',
-               'D1': 'zmm', 'D2': 'xyj', 'D3': 'zn', 'D4': 'czlv', 'D5': 'lal', 'D6': 'zyf', 'D7': 'zc', 'D8': 'fs',
-               'D9': 'wxlv', 'D10': 'none', 'D11': 'none', 'D12': 'none', 'D13': 'none', 'D14': 'none', 'D15': 'none',
+               'C9': 'fs', 'C10': 'none', 'C11': 'none', 'C12': 'none', 'C13': 'none', 'C14': 'none', 'C15': 'none',
+               'D1': 'zmm', 'D2': 'xyj', 'D3': 'zn', 'D4': 'czlv', 'D5': 'lal', 'D6': 'zyf', 'D7': 'zc', 'D8': 'dlm',
+               'D9': 'wel', 'D10': 'wxlv', 'D11': 'none', 'D12': 'none', 'D13': 'none', 'D14': 'none', 'D15': 'none',
                'E1': 'dxj',  'E2': 'zxs', 'E3': 'gxy', 'E4': 'gzq', 'E5': 'wsg', 'E6': 'yqq', 'E7': 'ht', 'E8': 'ccm',
-               'E9': 'none', 'E10': 'none', 'E11': 'none', 'E12': 'none', 'E13': 'none', 'E14': 'none', 'E15': 'none'}
+               'E9': 'wxf', 'E10': 'none', 'E11': 'none', 'E12': 'none', 'E13': 'none', 'E14': 'none', 'E15': 'none'}
                #, 20190619 by songml
 
 
 ##########################初始化员工列表#####################
 # 主岗列表
-list_main = ['A1', 'A5', 'B1', 'C1', 'D1', 'D3', 'E1', 'E5', 'E6']# 20190311, 'J1']
+list_main = ['A1', 'A5', 'B1', 'C1', 'D1', 'D3', 'E1', 'E5', 'E6']
 # 新人列表
-list_new = ['A7', 'C5', 'C6', 'C7', 'D6', 'E7', 'E8']
+list_new = ['A7', 'C5', 'C6', 'C7', 'D6', 'E7', 'E8', 'E9']
 # 女员工列表
-list_women = ['C4', 'D4', 'D5', 'D8', 'E5', 'E7', 'E8']
+list_women = ['C4', 'C8', 'D4', 'D5', 'D8', 'E6', 'E7', 'E8', 'E9']
 # 关键岗位备岗
 list_backup = []
 # 各岗位可值夜班人员
-list_group_A = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7']
-list_group_B = ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']
-list_group_C = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8']
-list_group_D = ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8']
-list_group_E = ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8']
+list_group_A = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8']
+list_group_B = ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8']
+list_group_C = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']
+list_group_D = ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9']
+list_group_E = ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9']
 
-list_moni = ['B7', 'D4', 'D5', 'D8']
-list_oa = ['A6', 'A7', 'D6', 'D7']
+list_moni = ['B7', 'C9', 'D4', 'D5', 'D9']
+list_oa = ['A6', 'A7', 'D6', 'D7', 'D8']
+list_da = ['A8', 'B8', 'D8', 'D9']
+list_not_hekou = ['E7', 'E8']
 
 ######人员列表####顺序和计数器中的顺序硬应该保持一致，否则计数混乱###############
 map = [

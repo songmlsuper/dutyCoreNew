@@ -66,8 +66,10 @@ with open("D:\\dutyInfo\\duty_counter.csv")  as csvfile:
 # modified by songml 20190127
 # 由于添加了一个周五计数器，时期变为倒数第8行了，即-8
 # 原来为-7
+# 由于添加了一个河口白班首日计数器，时期变为倒数第9行了，即-9
+# 原来为-8
 #targetLine = TotalLines[-7]
-targetLine = TotalLines[-8]
+targetLine = TotalLines[-9]
 targetLine = "".join(targetLine.split())  # 去掉无效字符
 print("targetLine:", targetLine)
 Lastday = targetLine.split(',')[1]
