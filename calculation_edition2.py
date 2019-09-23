@@ -25,6 +25,7 @@
 ##                    但是河口的夜班计数、周一及节假日后首日的计数、周五的计数均不再添加1；计划调整计数模式，每组15人
 ##                    已存在的人员在前，后面没分配的为none，补齐15人，这样配置文件好调整
 ## 20190625  宋明霖   添加河口白班节假日后首日计数器，添加夜盘值班监控组排他，添加夜盘值班OA组排他，添加夜盘值班总监助理排他
+## 20190923  宋明霖   总监助理数据库排他那里有问题，staff_old_night_D_list 使用错误，应当使用staff_old_night_D_inorder
 import csv
 import random
 import config2
@@ -985,8 +986,9 @@ def PaiBan(StartDate, Weekday, Specialday):
         if duty[i][0] == "A":
             if duty[i] in list_da:
                 for da in list_da:
-                    if da in staff_old_night_D_list:
-                        staff_old_night_D_list.remove(da)
+                    # 原来使用的是 staff_old_night_D_list 使用错误 20190923
+                    if da in staff_old_night_D_inorder:
+                        staff_old_night_D_inorder.remove(da)
                 f.write('\n' + '主机选择了一个总监助理后========数据库组，除去总监剩余的人===：' + str(staff_old_night_D_list))
             if duty[i] in list_oa: #主机组选中一个人有监控组属性后，与数据库组中监控的人互斥
                 for oa in list_oa:
