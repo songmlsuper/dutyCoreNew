@@ -1238,6 +1238,8 @@ def PaiBan(StartDate, Weekday, Specialday):
         duty_result[6] = smallnight[1]
         # 河口计数器
         staff_hekou[duty_result[1]] += 1
+        # 值班经理计数器
+        staff_manager[duty_result[2]] += 1
 
     # 节日后第一个交易日，全是大夜班，如果是周五，还是6个小夜班
     elif Specialday == 2:
@@ -1443,6 +1445,7 @@ def PaiBan(StartDate, Weekday, Specialday):
             print("小夜班:", fullnight_dict_inorder[2][1], "+", fullnight_dict_inorder[3][1])
             f.write('\n' + '小夜班：' + str(fullnight_dict_inorder[2][1]) +'、'+ str(fullnight_dict_inorder[3][1]))
 
+            #处理大
             ##########################################
             ##############计数器分别加1####################
             # 河口计数器

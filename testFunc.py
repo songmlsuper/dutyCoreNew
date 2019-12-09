@@ -43,3 +43,11 @@ if a is not b:
     print("not")
 else:
     print("yes")
+
+
+groupC=['C3', 'C6', 'C4', 'C1', 'C5', 'C7', 'C8', 'C2', 'C9']
+print(str(groupC))
+moni="C9"
+groupC.remove(moni)
+print(str(groupC))
+
