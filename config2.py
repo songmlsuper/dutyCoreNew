@@ -28,7 +28,7 @@ SongDict={'A1':'hw', 'A2':'dzt', 'A3':'srk', 'A4':'zyh', 'A5':'bk', 'A6':'sq', \
            'B1':'spc', 'B2':'wxl', 'B3':'yhr', 'B4':'wmy', 'B5':'yl', 'B6':'czh', 'H4':'yanglei', \
            'C1':'wyj', 'C2':'lph', 'C3':'lsj', 'C4':'zky', 'C5':'cj', 'C6':'lyc', 'C7':'fjk',  \
            'D1':'zn', 'D2':'zmm', 'D3':'xyj', 'D4':'wxlv', \
-           'E1':'dxj', 'E2':'gxy', 'E3':'zxs', 'E4':'gzq', \
+           'E1':'dxj', 'E2':'gxy', 'E3':'zxs', 'E4':'gzq',  \
            'F1':'wel', 'F2':'lal', 'F3':'sml', 'F4':'czlv', 'F5':'fs',\
            'G1':'yqq', 'C8':'sxm', \
            'H1':'dlm', 'H2':'zc', 'H3':'zyf', \
