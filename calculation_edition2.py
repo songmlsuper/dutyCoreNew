@@ -26,6 +26,7 @@
 ##                    已存在的人员在前，后面没分配的为none，补齐15人，这样配置文件好调整
 ## 20190625  宋明霖   添加河口白班节假日后首日计数器，添加夜盘值班监控组排他，添加夜盘值班OA组排他，添加夜盘值班总监助理排他
 ## 20190923  宋明霖   总监助理数据库排他那里有问题，staff_old_night_D_list 使用错误，应当使用staff_old_night_D_inorder
+## 20200427  宋明霖   男王欣纳入河口白班
 import csv
 import random
 import config2
@@ -425,6 +426,7 @@ def PaiBan(StartDate, Weekday, Specialday):
         tmp_hekou_arr.remove(nothekou)
     #女王欣不参加夜盘，但参加河口值班
     tmp_hekou_arr.append('D10') # 女王欣参加河口白班值班
+    tmp_hekou_arr.append('E10')  # 男王欣参加河口白班值班
     random.shuffle(tmp_hekou_arr)
     staff_hekou_day = {}
     for staff in tmp_hekou_arr:
@@ -1270,6 +1272,21 @@ def PaiBan(StartDate, Weekday, Specialday):
             print("小夜班:", fullnight_dict_inorder[2][1], "+", fullnight_dict_inorder[3][1])
             f.write('\n' + '小夜班：' + str(fullnight_dict_inorder[2][1]) + '、' + str(fullnight_dict_inorder[3][1]))
 
+            #考虑节假日后首日选择之后，启停没有应用岗位的人。 by songml 20191220
+            f.write('\n' + '判断周五，节假日首日小夜班有没有应用的人')
+            if duty_result[5][0] != "C" and duty_result[6][0] != "C" and duty_result[2][0] != "C":
+                if duty_result[3][0] == "C":
+                    f.write('\n' + 'duty_result[3] 是应用组的 duty_result[3] 与 duty_result[5])互换')
+                    tmpDuty = duty_result[3]
+                    duty_result[3] = duty_result[5]
+                    duty_result[5] = tmpDuty
+                elif duty_result[4][0] == "C":
+                    f.write('\n' + 'duty_result[4] 是应用组的 duty_result[4] 与 duty_result[6])互换')
+                    tmpDuty = duty_result[4]
+                    duty_result[4] = duty_result[6]
+                    duty_result[6] = tmpDuty
+
+            #考虑节假日后首日选择之后，启停没有应用岗位的人。 by songml 20191220
             ##########################################
             ##############计数器分别加1####################
             # 河口计数器
