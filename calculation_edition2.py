@@ -27,6 +27,7 @@
 ## 20190625  宋明霖   添加河口白班节假日后首日计数器，添加夜盘值班监控组排他，添加夜盘值班OA组排他，添加夜盘值班总监助理排他
 ## 20190923  宋明霖   总监助理数据库排他那里有问题，staff_old_night_D_list 使用错误，应当使用staff_old_night_D_inorder
 ## 20200427  宋明霖   男王欣纳入河口白班 songml
+## 20200520  宋明霖   值班的间隔尝试调整到间隔4天(原来为3天),以扩大值班间隔。使值班人员值班最少间隔7天。
 import csv
 import random
 import config2
@@ -48,6 +49,8 @@ def PaiBan(StartDate, Weekday, Specialday):
     LastMateList_1 = [0, 0, 0, 0, 0, 0]
     LastMateList_2 = [0, 0, 0, 0, 0, 0]
     LastMateList_3 = [0, 0, 0, 0, 0, 0]
+    # 倒数第四天 added by songml
+    LastMateList_4 = [0, 0, 0, 0, 0, 0]
     with open("D:\\dutyInfo\\duty_schedule_raw.csv")  as csvfile:
         reader = csv.reader(csvfile)
         TotalLines = csvfile.readlines()
@@ -58,9 +61,14 @@ def PaiBan(StartDate, Weekday, Specialday):
     #倒数第3天的值班人员
     targetLine_3 = TotalLines[-3]
 
+    #倒数第4天的值班人员
+    targetLine_4 = TotalLines[-4]
+
+
     targetLine_1 = "".join(targetLine_1.split())  # 去掉无效字符
     targetLine_2 = "".join(targetLine_2.split())  # 去掉无效字符
     targetLine_3 = "".join(targetLine_3.split())  # 去掉无效字符
+    targetLine_4 = "".join(targetLine_4.split())  # 去掉无效字符
 
     for i in range(1, len(targetLine_1.split(','))):
         LastMateList_1[i - 1] = targetLine_1.split(',')[i]
@@ -83,13 +91,22 @@ def PaiBan(StartDate, Weekday, Specialday):
     print("大前天的值班人员", LastMateList_3)
     f.write('\n' + '3天前的值班人员：' + str(LastMateList_3))
 
-    # 删除掉河口的人，因为河口是白班了，不应该把河口值班排除在外进行选择
+    for i in range(1, len(targetLine_4.split(','))):
+        LastMateList_4[i - 1] = targetLine_4.split(',')[i]
+    Date_4 = targetLine_4.split(',')[0]
+    print("大前天的值班日期:", Date_4)
+    print("大前天的值班人员", LastMateList_4)
+    f.write('\n' + '4天前的值班人员：' + str(LastMateList_4))
+
+    # 删除掉河口的人，因为河口是白班了，把河口值班排除在外进行选择
     LastMateList_1.remove(LastMateList_1[0])
     LastMateList_2.remove(LastMateList_2[0])
     LastMateList_3.remove(LastMateList_3[0])
+    LastMateList_4.remove(LastMateList_4[0])
     f.write('\n' + '昨天除去河口的值班人员：' + str(LastMateList_1))
     f.write('\n' + '前天除去河口的值班人员：' + str(LastMateList_2))
     f.write('\n' + '大前天除去河口的值班人员：' + str(LastMateList_3))
+    f.write('\n' + '大前天除去河口的值班人员：' + str(LastMateList_4))
     # if Date_1 in holiday_lastday:
     #     LastMateList =  LastMateList_2 + LastMateList_3
     # elif Date_2 in holiday_lastday:
@@ -99,9 +116,10 @@ def PaiBan(StartDate, Weekday, Specialday):
     # else:
     #     LastMateList = LastMateList_1 + LastMateList_2 + LastMateList_3
     # 节前最后一天也纳入，排除选项，否则会出现节前值班，节后第一天再次值班
-    LastMateList = LastMateList_1 + LastMateList_2 + LastMateList_3
-    print("前3天的值班人员：",LastMateList)
-    f.write('\n' + '前3天的值班人员：' + str(LastMateList))
+    #LastMateList = LastMateList_1 + LastMateList_2 + LastMateList_3
+    LastMateList = LastMateList_1 + LastMateList_2 + LastMateList_3 + LastMateList_4
+    print("前4天的值班人员：",LastMateList)
+    f.write('\n' + '前4天的值班人员：' + str(LastMateList))
 
     csvfile.close()
     #######################从历史数据中提取最后一次计数器###########
