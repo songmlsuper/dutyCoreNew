@@ -28,6 +28,7 @@
 ## 20190923  宋明霖   总监助理数据库排他那里有问题，staff_old_night_D_list 使用错误，应当使用staff_old_night_D_inorder
 ## 20200427  宋明霖   男王欣纳入河口白班 songml
 ## 20200520  宋明霖   值班的间隔尝试调整到间隔4天(原来为3天),以扩大值班间隔。使值班人员值班最少间隔7天。
+## 20201127  宋明霖   添加2021年日历
 import csv
 import random
 import config2
