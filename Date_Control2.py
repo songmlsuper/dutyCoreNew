@@ -1,17 +1,18 @@
+# coding=utf-8
 #!/usr/bin/python3
 ####################################################
-##    date      editor                        action
-## 20180707  李松健                     发布1.0版本
-## 20180816  李松健  将节日前一天特殊处理，白班人员可以参加下一日的值班
-## 20180904  李松健  将选过6个人后的值班表打乱顺序，避免后续职责选人时的固定顺序现象，例如之前河口都是优先选择新人
-## 20180919  李松健  增加3个主岗霍伟、丁肇町、宋鹏程，每日值班主岗人数限制为2人以内
-## 20180920  李松健  增加主岗张宁
-## 20180927  李松健  将输入参数变为年、月，初始参数全部转移至config.py文件
-## 20180928  李松健  人员变化，删除于林立、李沛衡，其他人员重新排序，数据独立存储
-## 20181009  李松健  增加日期判断，提示错误的日期输入，生成的csv文件存在D:\\dutyInfo；每日主岗在特殊情况可以为4人
-## 20181017  李松健  增加周一小夜班计数器，节假日后第一天的小夜班采用计数器，周一小夜班的多的人值大夜班
-## 20181024  李松健  周一小夜班计数器数据补充至2017年7月，增加李松健至值班人员表
-## 20190127  宋明霖  读取的duty_schedule.csv,读取日期从倒数第8行读取（添加了一个周五计数器），原来是倒数第7行，
+#    date      editor                        action
+# 20180707  李松健                     发布1.0版本
+# 20180816  李松健  将节日前一天特殊处理，白班人员可以参加下一日的值班
+# 20180904  李松健  将选过6个人后的值班表打乱顺序，避免后续职责选人时的固定顺序现象，例如之前河口都是优先选择新人
+# 20180919  李松健  增加3个主岗霍伟、丁肇町、宋鹏程，每日值班主岗人数限制为2人以内
+# 20180920  李松健  增加主岗张宁
+# 20180927  李松健  将输入参数变为年、月，初始参数全部转移至config.py文件
+# 20180928  李松健  人员变化，删除于林立、李沛衡，其他人员重新排序，数据独立存储
+# 20181009  李松健  增加日期判断，提示错误的日期输入，生成的csv文件存在D:\\dutyInfo；每日主岗在特殊情况可以为4人
+# 20181017  李松健  增加周一小夜班计数器，节假日后第一天的小夜班采用计数器，周一小夜班的多的人值大夜班
+# 20181024  李松健  周一小夜班计数器数据补充至2017年7月，增加李松健至值班人员表
+# 20190127  宋明霖  读取的duty_schedule.csv,读取日期从倒数第8行读取（添加了一个周五计数器），原来是倒数第7行，
 
 import calendar
 import datetime
@@ -20,7 +21,7 @@ import calculation_edition2
 import config2
 import sys
 
-#调用外部参数
+# 调用外部参数
 StartDate_input = str(sys.argv[1])
 EndDate_input = str(sys.argv[2])
 
@@ -34,13 +35,13 @@ StartDate_day = 1
 StartDate = StartDate_input + "01"
 print("StartDate", StartDate)
 
-#终止日期
+# 终止日期
 EndDate_year = int(EndDate_input[0:4])
 EndDate_month = int(EndDate_input[4:6])
-#########计算每个月第一天是星期几、每个月几天##########
+# ########计算每个月第一天是星期几、每个月几天##########
 firstDayWeekDay, monthRange = calendar.monthrange(EndDate_year,EndDate_month)
 print(firstDayWeekDay, monthRange)
-##每个月的最后一天
+# 每个月的最后一天
 EndDate_day = monthRange
 
 EndDate=EndDate_input+str(EndDate_day)
@@ -54,7 +55,7 @@ print("起始日期的类型:", type(StartDate_date))
 EndDate_date = datetime.datetime(EndDate_year, EndDate_month, EndDate_day)
 
 #########################
-#从配置文件初始化节假日
+# 从配置文件初始化节假日
 holiday = config2.holiday
 holiday_lastday = config2.holiday_lastday
 holiday_nextday = config2.holiday_nextday
@@ -68,7 +69,7 @@ with open("D:\\dutyInfo\\duty_counter.csv")  as csvfile:
 # 原来为-7
 # 由于添加了一个河口白班首日计数器，时期变为倒数第9行了，即-9
 # 原来为-8
-#targetLine = TotalLines[-7]
+# targetLine = TotalLines[-7]
 targetLine = TotalLines[-9]
 targetLine = "".join(targetLine.split())  # 去掉无效字符
 print("targetLine:", targetLine)
@@ -87,8 +88,8 @@ a=(StartDate_date - Lastday_date).days
 print("起始日期和历史日期的天数差值：", a)
 # ########################################################################
 
-#日期需要满足：1、起始日期在历史时期之后1~15天内；2、终止日期在起始日期后。否则报“输入日期错误”
-if (((StartDate_date - Lastday_date).days >=1) and ((StartDate_date - Lastday_date).days < 15) and ((EndDate_date - StartDate_date).days >= 0)):
+# 日期需要满足：1、起始日期在历史时期之后1~15天内；2、终止日期在起始日期后。否则报“输入日期错误”
+if ((StartDate_date - Lastday_date).days >= 1) and ((StartDate_date - Lastday_date).days < 15) and ((EndDate_date - StartDate_date).days >= 0):
     print("日期正确")
     # NextDay为排班日
     NextDay = StartDate

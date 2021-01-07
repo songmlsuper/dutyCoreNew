@@ -1,34 +1,38 @@
+# coding=utf-8
 #!/usr/bin/python3
 ####################################################
-##    date      editor                        action
-## 20180707  李松健                     发布1.0版本
-## 20180816  李松健  将节日前一天特殊处理，白班人员可以参加下一日的值班
-## 20180904  李松健  将选过6个人后的值班表打乱顺序，避免后续职责选人时的固定顺序现象，例如之前河口都是优先选择新人
-## 20180919  李松健  增加3个主岗霍伟、丁肇町、宋鹏程，每日值班主岗人数限制为2人以内
-## 20180920  李松健  增加主岗张宁
-## 20180927  李松健  将输入参数变为年、月，初始参数全部转移至config2.py文件
-## 20180928  李松健  人员变化，删除于林立、李沛衡，其他人员重新排序，数据独立存储
-## 20181009  李松健  增加日期判断，提示错误的日期输入，生成的csv文件存在D:\\dutyInfo；每日主岗在特殊情况可以为4人
-## 20181017  李松健  增加周一小夜班计数器，节假日后第一天的小夜班采用计数器，周一小夜班的多的人值大夜班
-## 20181024  李松健  周一小夜班计数器数据补充至2017年7月，增加李松健至值班人员表
-## 20181214  宋明霖  夜班女生人数限制为最多2人
-## 20190122  宋明霖  添加节假日后首日与周一合并作为【节假日后首日】进行计数，逻辑一并调整
-## 20190125  宋明霖  添加周五计数器，CVS添加周五计数器，排完班后需要相应地计数。
-## 20190126  宋明霖  组人员调整F5 李松健 <=> C3 范嵩  ==> C3 李松健, F5 范嵩，去掉I4
-## 20190126  宋明霖  相应的角色也调整 git test 5
-## 20190514  宋明霖  王欣(女）不再参加值班、李沛衡暂不参加值班，张驰、沈全从新员工转为老员工（可担任值班经理）
-## 20190516  宋明霖  逻辑调整，原来单独选择新人，调整后：选择完主岗、网络、应用后，将主岗、非主岗人员（包括新人）混在一起选，新人只是角色（同女生)
-## 20190516  宋明霖  晓梅由原来的G2变为C8 由质量管理岗位变为应用岗位
-## 20190618  宋明霖  逻辑修改，河口变为白班，原来多个岗位归并为5个岗位：网络、应用、主机、数据库、安全，进行人员分组
-## 20190619  宋明霖  主机 数据库 安全 分别按照日期的情况，依组别进行夜班计数排序选人；修改hardcode,依据config2里的配置进行随机打乱
-## 20190620  宋明霖  选定河口值班人员（主岗、中层、春苗、韩婷除外），随机乱序，排序；不在昨天、今天（五人）之中，选择河口计数器最小的河口值班
-##                    但是河口的夜班计数、周一及节假日后首日的计数、周五的计数均不再添加1；计划调整计数模式，每组15人
-##                    已存在的人员在前，后面没分配的为none，补齐15人，这样配置文件好调整
-## 20190625  宋明霖   添加河口白班节假日后首日计数器，添加夜盘值班监控组排他，添加夜盘值班OA组排他，添加夜盘值班总监助理排他
-## 20190923  宋明霖   总监助理数据库排他那里有问题，staff_old_night_D_list 使用错误，应当使用staff_old_night_D_inorder
-## 20200427  宋明霖   男王欣纳入河口白班 songml
-## 20200520  宋明霖   值班的间隔尝试调整到间隔4天(原来为3天),以扩大值班间隔。使值班人员值班最少间隔7天。
-## 20201127  宋明霖   添加2021年日历
+#    date      editor                        action
+# 20180707  李松健                     发布1.0版本
+# 20180816  李松健  将节日前一天特殊处理，白班人员可以参加下一日的值班
+# 20180904  李松健  将选过6个人后的值班表打乱顺序，避免后续职责选人时的固定顺序现象，例如之前河口都是优先选择新人
+# 20180919  李松健  增加3个主岗霍伟、丁肇町、宋鹏程，每日值班主岗人数限制为2人以内
+# 20180920  李松健  增加主岗张宁
+# 20180927  李松健  将输入参数变为年、月，初始参数全部转移至config2.py文件
+# 20180928  李松健  人员变化，删除于林立、李沛衡，其他人员重新排序，数据独立存储
+# 20181009  李松健  增加日期判断，提示错误的日期输入，生成的csv文件存在D:\\dutyInfo；每日主岗在特殊情况可以为4人
+# 20181017  李松健  增加周一小夜班计数器，节假日后第一天的小夜班采用计数器，周一小夜班的多的人值大夜班
+# 20181024  李松健  周一小夜班计数器数据补充至2017年7月，增加李松健至值班人员表
+# 20181214  宋明霖  夜班女生人数限制为最多2人
+# 20190122  宋明霖  添加节假日后首日与周一合并作为【节假日后首日】进行计数，逻辑一并调整
+# 20190125  宋明霖  添加周五计数器，CVS添加周五计数器，排完班后需要相应地计数。
+# 20190126  宋明霖  组人员调整F5 李松健 <=> C3 范嵩  ==> C3 李松健, F5 范嵩，去掉I4
+# 20190126  宋明霖  相应的角色也调整 git test 5
+# 20190514  宋明霖  王欣(女）不再参加值班、李沛衡暂不参加值班，张驰、沈全从新员工转为老员工（可担任值班经理）
+# 20190516  宋明霖  逻辑调整，原来单独选择新人，调整后：选择完主岗、网络、应用后，将主岗、非主岗人员（包括新人）混在一起选，新人只是角色（同女生)
+# 20190516  宋明霖  晓梅由原来的G2变为C8 由质量管理岗位变为应用岗位
+# 20190618  宋明霖  逻辑修改，河口变为白班，原来多个岗位归并为5个岗位：网络、应用、主机、数据库、安全，进行人员分组
+# 20190619  宋明霖  主机 数据库 安全 分别按照日期的情况，依组别进行夜班计数排序选人；修改hardcode,依据config2里的配置进行随机打乱
+# 20190620  宋明霖  选定河口值班人员（主岗、中层、春苗、韩婷除外），随机乱序，排序；不在昨天、今天（五人）之中，选择河口计数器最小的河口值班
+#                    但是河口的夜班计数、周一及节假日后首日的计数、周五的计数均不再添加1；计划调整计数模式，每组15人
+#                    已存在的人员在前，后面没分配的为none，补齐15人，这样配置文件好调整
+# 20190625  宋明霖   添加河口白班节假日后首日计数器，添加夜盘值班监控组排他，添加夜盘值班OA组排他，添加夜盘值班总监助理排他
+# 20190923  宋明霖   总监助理数据库排他那里有问题，staff_old_night_D_list 使用错误，应当使用staff_old_night_D_inorder
+# 20200427  宋明霖   男王欣纳入河口白班 songml
+# 20200520  宋明霖   值班的间隔尝试调整到间隔4天(原来为3天),以扩大值班间隔。使值班人员值班最少间隔7天。
+# 20201127  宋明霖   添加2021年日历
+# 20210106  宋明霖   添加新人值班
+# 20210106  宋明霖   添加应用岗位总监助理处理逻辑
+# 20210107  宋明霖   取消主岗优先选择功能逻辑
 import csv
 import random
 import config2
@@ -37,7 +41,7 @@ import config2
 SongDict=config2.SongDictNew
 
 
-#节假日的前一交易日
+# 节假日的前一交易日
 holiday_lastday = config2.holiday_lastday
 
 def PaiBan(StartDate, Weekday, Specialday):
@@ -65,6 +69,8 @@ def PaiBan(StartDate, Weekday, Specialday):
     #倒数第4天的值班人员
     targetLine_4 = TotalLines[-4]
 
+    #女生限制数
+    dutyWomenLimits=5
 
     targetLine_1 = "".join(targetLine_1.split())  # 去掉无效字符
     targetLine_2 = "".join(targetLine_2.split())  # 去掉无效字符
@@ -790,68 +796,70 @@ def PaiBan(StartDate, Weekday, Specialday):
     moni_cnt = 0
     oa_cnt = 0
 
-    # 主岗不能是昨天值班的人员
-    for i in range(main_amount):
-        if staff_chief_night_inorder[i] in LastMateList:
-            continue
-        else:
-            duty.append(staff_chief_night_inorder[i])
-            chief_amout += 1
-            # added by songml for duty_women_cnt 20181214
-            if staff_chief_night_inorder[i] in list_women:
-                f.write('\n' + '选中的女生为：' + staff_chief_night_inorder[i])
-                duty_women_cnt += 1
-            break
-    main_cnt += 1
-    f.write('\n' + '选过主岗的新版值班表：' + str(duty))
+    # =============================== 取消主岗优先选择功能逻辑 start 20210107 ==================================
+    # # 主岗不能是昨天值班的人员
+    # for i in range(main_amount):
+    #     if staff_chief_night_inorder[i] in LastMateList:
+    #         continue
+    #     else:
+    #         duty.append(staff_chief_night_inorder[i])
+    #         chief_amout += 1
+    #         # added by songml for duty_women_cnt 20181214
+    #         if staff_chief_night_inorder[i] in list_women:
+    #             f.write('\n' + '选中的女生为：' + staff_chief_night_inorder[i])
+    #             duty_women_cnt += 1
+    #         break
+    # main_cnt += 1
+    # f.write('\n' + '选过主岗的新版值班表：' + str(duty))
+    # =============================== 取消主岗优先选择功能逻辑 end 20210107 ==================================
     ###################先判断是否有网络和应用岗位,然后选出余下的值班人员(新算法)######################
     ##############################################################################
-
+    # 取消主岗优先选择逻辑后，选择岗位人员时，不必再考虑该岗位 已被优先选择的主岗占用。
     f.write('\n' + '选过主岗后女生的人数===========：' + str(duty_women_cnt))
-    if duty[0][0] != "B":
-        print("没有网络，额外添加")
-        f.write('\n' + ' 没有网络，额外添加')
-        for i in range(len(staff_old_night_B_inorder)):  # 按照夜班数量的从小到大安排网络岗位值班,并确保当天值班人员不是一个岗位的
-            if staff_old_night_B_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
-                continue
-            else:
-                # added by songml for duty_women_cnt 20181214
-                if staff_old_night_B_inorder[i] in list_women:  # 如果是女生
+    # if duty[0][0] != "B":
+    #     print("没有网络，额外添加")
+    #     f.write('\n' + ' 没有网络，额外添加')
+    for i in range(len(staff_old_night_B_inorder)):  # 按照夜班数量的从小到大安排网络岗位值班,并确保当天值班人员不是一个岗位的
+        if staff_old_night_B_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
+            continue
+        else:
+            # added by songml for duty_women_cnt 20181214
+            if staff_old_night_B_inorder[i] in list_women:  # 如果是女生
 
-                    if duty_women_cnt == 2:  # 女生数为2 ，直接跳过
-                        f.write('\n' + ' 网络选人中 且这次选中的人为女生 但女生数已为2 跳过:'
-                                + staff_old_night_B_inorder[i])
-                        continue
-                    else:  # 女生数不为2
-                        duty.append(staff_old_night_B_inorder[i])
-                        f.write('\n' + '选中的女生为：' + staff_old_night_B_inorder[i])
-                        duty_women_cnt += 1
-                        if staff_old_night_B_inorder[i] in list_new:  # 女生数不为2，如果新人，之前没有新人，新人计数器添加1
-                            f.write('\n' + '网络选中的新人为：' + staff_old_night_B_inorder[i])
-                            duty_new_cnt += 1
-                        # 网络主岗没有女生，所以不考虑主岗情况
-                        break
-                # added by songml for duty_women_cnt 20181214
-                else:  # 不是女生
+                if duty_women_cnt == dutyWomenLimits:  # 女生数为 dutyWomenLimits ，直接跳过
+                    f.write('\n' + ' 网络选人中 且这次选中的人为女生 但女生数已为2 跳过:'
+                            + staff_old_night_B_inorder[i])
+                    continue
+                else:  # 女生数不为 dutyWomenLimits
                     duty.append(staff_old_night_B_inorder[i])
-                    if staff_old_night_B_inorder[i] in list_new:  # 不是女生，且之前没有新人，所以新人计数直接添加1
-                        f.write('\n' + '网络选中的新人、非女生为：' + staff_old_night_B_inorder[i])
+                    f.write('\n' + '选中的女生为：' + staff_old_night_B_inorder[i])
+                    duty_women_cnt += 1
+                    if staff_old_night_B_inorder[i] in list_new:  # 女生数不为2，如果新人，之前没有新人，新人计数器添加1
+                        f.write('\n' + '网络选中的新人为：' + staff_old_night_B_inorder[i])
                         duty_new_cnt += 1
-                    if staff_old_night_B_inorder[i] in list_main:  # 如果是主岗，主岗计数器添加1
-                        f.write('\n' + '网络选中主岗、非女生为：' + staff_old_night_B_inorder[i])
-                        main_cnt += 1
+                    # 网络主岗没有女生，所以不考虑主岗情况
                     break
+            # added by songml for duty_women_cnt 20181214
+            else:  # 不是女生
+                duty.append(staff_old_night_B_inorder[i])
+                if staff_old_night_B_inorder[i] in list_new:  # 不是女生，且之前没有新人，所以新人计数直接添加1
+                    f.write('\n' + '网络选中的新人、非女生为：' + staff_old_night_B_inorder[i])
+                    duty_new_cnt += 1
+                if staff_old_night_B_inorder[i] in list_main:  # 如果是主岗，主岗计数器添加1
+                    f.write('\n' + '网络选中主岗、非女生为：' + staff_old_night_B_inorder[i])
+                    main_cnt += 1
+                break
                 # break
     f.write('\n' + '选过网络岗位后女生人数===========：' + str(duty_women_cnt))
     f.write('\n' + '选过网络岗位后新人数===========：' + str(duty_new_cnt))
     f.write('\n' + '选过网络主岗人数===========：' + str(main_cnt))
-    #选择完网络后 看是否选择了一个总监助理，是否选择了具有监控属性的人
+    # 选择完网络后 看是否选择了一个总监助理，是否选择了具有监控属性的人
 
 
     for i in range(len(duty)):
         if duty[i][0] == "B":
             # f.write('\n当前为============= ' + duty[i])
-            if duty[i] in list_da:#网络组选中了总监助理后，与主机，数据库的总监助理互斥
+            if duty[i] in list_da:#网络组选中了总监助理后，与主机，数据库、应用的总监助理互斥
                 for da in list_da:
                     if da in staff_old_night_A_inorder:
                         # f.write('\n总监主机删除============= '+ da)
@@ -859,9 +867,14 @@ def PaiBan(StartDate, Weekday, Specialday):
                     if da in staff_old_night_D_inorder:
                         # f.write('\n数据库主机删除============= ' + da)
                         staff_old_night_D_inorder.remove(da)
+                    #与应用岗位中的总监助理互斥 20210106
+                    if da in staff_old_night_C_inorder:
+                        # f.write('\n数据库主机删除============= ' + da)
+                        staff_old_night_C_inorder.remove(da)
                 f.write('\n' + '选择了一个总监助理后========主机组===：' + str(staff_old_night_A_inorder))
                 f.write('\n' + '选择了一个总监助理后========数据库组===：' + str(staff_old_night_D_inorder))
-            if duty[i] in list_moni: #网络组选中一个人有监控组属性后，与数据库组中监控的人互斥
+                f.write('\n' + '选择了一个总监助理后========应用组===：' + str(staff_old_night_C_inorder))
+            if duty[i] in list_moni: #网络组选中一个人有监控组属性后，与应用、数据库组中监控的人互斥
                 for moni in list_moni:
                     # f.write('\n当前为里面============= ' + duty[i] + ' ===== ' + moni)
                     if moni in staff_old_night_C_inorder:
@@ -876,129 +889,140 @@ def PaiBan(StartDate, Weekday, Specialday):
 
 
 
-    if duty[0][0] != "C":
-        print("没有应用，额外添加")
-        f.write('\n' + ' 没有应用，额外添加')
-        f.write('\n'+str(staff_old_night_C_inorder))
-        f.write('\n' + str(LastMateList))
-        for i in range(len(staff_old_night_C_inorder)):  # 按照夜班数量的从小到大安排网络岗位值班,并确保当天值班人员不是一个岗位的
-            if staff_old_night_C_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
-                continue
-            else:
+    # if duty[0][0] != "C":
+    #     print("没有应用，额外添加")
+    #     f.write('\n' + ' 没有应用，额外添加')
+    #     f.write('\n'+str(staff_old_night_C_inorder))
+    #     f.write('\n' + str(LastMateList))
+    for i in range(len(staff_old_night_C_inorder)):  # 按照夜班数量的从小到大安排网络岗位值班,并确保当天值班人员不是一个岗位的
+        if staff_old_night_C_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
+            continue
+        else:
 
-                # added by songml for duty_women_cnt 20181214
-                if staff_old_night_C_inorder[i] in list_women:  # 如果选中了女生
-                    if duty_women_cnt == 2:  # 女生数已经为2
-                        f.write('\n' + ' 应用选人中 且这次选中的人为女生 但女生数已为2 跳过 :' + staff_old_night_C_inorder[i])
-                        continue
-                    else:  # 女生数小于2
-                        if staff_old_night_C_inorder[i] in list_new:  # 选中的人为新人
-                            if duty_new_cnt == 0:  # 女生小于2人 且 新人数为0 添加并计数
-                                duty.append(staff_old_night_C_inorder[i])
-                                f.write('\n' + '应用选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_C_inorder[i])
-                                duty_women_cnt += 1
-                                duty_new_cnt += 1
-                                break
-                            else:  # 女生小于2人 但新人数已经为1 直接跳过
-                                f.write('\n' + ' 应用选人中 且这次选中的人为女生 但女生数 < 2 但新人数超过1 跳过'
-                                        + staff_old_night_C_inorder[i])
-                                continue
-                        else:
+            # added by songml for duty_women_cnt 20181214
+            if staff_old_night_C_inorder[i] in list_women:  # 如果选中了女生
+                if duty_women_cnt == dutyWomenLimits:  # 女生数已经为 dutyWomenLimits
+                    f.write('\n' + ' 应用选人中 且这次选中的人为女生 但女生数已为2 跳过 :' + staff_old_night_C_inorder[i])
+                    continue
+                else:  # 女生数小于2
+                    if staff_old_night_C_inorder[i] in list_new:  # 选中的人为新人
+                        if duty_new_cnt == 0:  # 女生小于2人 且 新人数为0 添加并计数
                             duty.append(staff_old_night_C_inorder[i])
-                            f.write('\n' + '应用选人中 选中的非新人女生为：' + staff_old_night_C_inorder[i] )
+                            f.write('\n' + '应用选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_C_inorder[i])
                             duty_women_cnt += 1
-                            #应用主岗没有女生，所以不考虑主岗情况
-                            break
-                # added by songml for duty_women_cnt 20181214
-                else:  # 非女生
-                    if staff_old_night_C_inorder[i] in list_new:
-                        if duty_new_cnt == 0:  # 非女生 且为新人数 为 0
-                            duty.append(staff_old_night_C_inorder[i])
-                            f.write('\n' + '选中的新人(非女生)为：' + staff_old_night_C_inorder[i] + ' 新人数：'
-                                    + str(duty_women_cnt))
                             duty_new_cnt += 1
-
                             break
-                        else:
-                            f.write('\n' + ' 应用选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
+                        else:  # 女生小于2人 但新人数已经为1 直接跳过
+                            f.write('\n' + ' 应用选人中 且这次选中的人为女生 但女生数 < 2 但新人数超过1 跳过'
                                     + staff_old_night_C_inorder[i])
                             continue
-                    else:#非新人
+                    else:
                         duty.append(staff_old_night_C_inorder[i])
-                        if staff_old_night_C_inorder[i] in list_main:  # 如果是主岗，主岗计数器添加1
-                            f.write('\n' + '应用选中主岗、非女生为：' + staff_old_night_C_inorder[i])
-                            main_cnt += 1
+                        f.write('\n' + '应用选人中 选中的非新人女生为：' + staff_old_night_C_inorder[i] )
+                        duty_women_cnt += 1
+                        #应用主岗没有女生，所以不考虑主岗情况
                         break
+            # added by songml for duty_women_cnt 20181214
+            else:  # 非女生
+                if staff_old_night_C_inorder[i] in list_new:
+                    if duty_new_cnt == 0:  # 非女生 且为新人数 为 0
+                        duty.append(staff_old_night_C_inorder[i])
+                        f.write('\n' + '选中的新人(非女生)为：' + staff_old_night_C_inorder[i] + ' 新人数：'
+                                + str(duty_women_cnt))
+                        duty_new_cnt += 1
+
+                        break
+                    else:
+                        f.write('\n' + ' 应用选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
+                                + staff_old_night_C_inorder[i])
+                        continue
+                else:#非新人
+                    duty.append(staff_old_night_C_inorder[i])
+                    if staff_old_night_C_inorder[i] in list_main:  # 如果是主岗，主岗计数器添加1
+                        f.write('\n' + '应用选中主岗、非女生为：' + staff_old_night_C_inorder[i])
+                        main_cnt += 1
+                    break
                 # break
     ##############转换为新的值班表，列表形式############
     f.write('\n' + '选过主岗、网络(可能是新人)、应用(可能是新人)的新版值班表：' + str(duty))
     for i in range(len(duty)):
         if duty[i][0] == "C":
-            if duty[i] in list_moni: #网络组选中一个人有监控组属性后，与数据库组中监控的人互斥
+            if duty[i] in list_da:  # 应用组选中了总监助理后，与数据库的总监助理互斥
+                for da in list_da:
+                    if da in staff_old_night_D_inorder:
+                        # f.write('\n数据库总监助理删除============= ' + da)
+                        staff_old_night_D_inorder.remove(da)
+                    if da in staff_old_night_A_inorder:
+                        # f.write('\n主机总监助理删除============= ' + da)
+                        staff_old_night_A_inorder.remove(da)
+                f.write('\n' + '选择了一个总监助理后========数据库组===：' + str(staff_old_night_D_inorder))
+                f.write('\n' + '选择了一个总监助理后========主机组===：' + str(staff_old_night_A_inorder))
+
+            if duty[i] in list_moni: #应用组选中一个人有监控组属性后，与数据库组中监控的人互斥
                 for moni in list_moni:
                     if moni in staff_old_night_D_inorder:
                         staff_old_night_D_inorder.remove(moni)
-                f.write('\n' + '应用选择了监控组属性的人后========数据库组除去监控属性的人，剩余的人===：' + str(staff_old_night_C_inorder))
+                f.write('\n' + '应用选择了监控组属性的人后========除去监控属性的人,数据库组剩余的人===：' + str(staff_old_night_D_inorder))
             break
 
     ######选择主机岗位的人员  20190618 by songml #######################
-    if duty[0][0] != "A":
-        print("没有主机，额外添加")
-        f.write('\n' + ' 没有主机，额外添加')
-        f.write('\n'+str(staff_old_night_A_inorder))
-        f.write('\n' + str(LastMateList))
-        for i in range(len(staff_old_night_A_inorder)):  # 按照夜班数量的从小到大安排网络岗位值班,并确保当天值班人员不是一个岗位的
-            if staff_old_night_A_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
-                continue
-            else:
+    # if duty[0][0] != "A":
+    #     print("没有主机，额外添加")
+    #     f.write('\n' + ' 没有主机，额外添加')
+    #     f.write('\n'+str(staff_old_night_A_inorder))
+    #     f.write('\n' + str(LastMateList))
+    for i in range(len(staff_old_night_A_inorder)):  # 按照夜班数量的从小到大安排网络岗位值班,并确保当天值班人员不是一个岗位的
+        if staff_old_night_A_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
+            continue
+        else:
 
-                # added by songml for duty_women_cnt 20181214
-                if staff_old_night_A_inorder[i] in list_women:  # 如果选中了女生
-                    if duty_women_cnt == 2:  # 女生数已经为2
-                        f.write('\n' + ' 主机选人中 且这次选中的人为女生 但女生数已为2 跳过 :' + staff_old_night_A_inorder[i])
-                        continue
-                    else:  # 女生数小于2
-                        if staff_old_night_A_inorder[i] in list_new:  # 选中的人为新人
-                            if duty_new_cnt == 0:  # 女生小于2人 且 新人数为0 添加并计数
-                                duty.append(staff_old_night_A_inorder[i])
-                                f.write('\n' + '主机选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_A_inorder[i])
-                                duty_women_cnt += 1
-                                duty_new_cnt += 1
-                                break
-                            else:  # 女生小于2人 但新人数已经为1 直接跳过
-                                f.write('\n' + ' 主机选人中 且这次选中的人为女生 但女生数 < 2 但新人数超过1 跳过'
-                                        + staff_old_night_A_inorder[i])
-                                continue
-                        else:
+            # added by songml for duty_women_cnt 20181214
+            if staff_old_night_A_inorder[i] in list_women:  # 如果选中了女生
+                if duty_women_cnt == dutyWomenLimits:  # 女生数已经为2
+                    f.write('\n' + ' 主机选人中 且这次选中的人为女生 但女生数已为2 跳过 :' + staff_old_night_A_inorder[i])
+                    continue
+                else:  # 女生数小于2
+                    if staff_old_night_A_inorder[i] in list_new:  # 选中的人为新人
+                        if duty_new_cnt == 0:  # 女生小于2人 且 新人数为0 添加并计数
                             duty.append(staff_old_night_A_inorder[i])
-                            f.write('\n' + '主机选人中 选中的非新人女生为：' + staff_old_night_A_inorder[i] )
+                            f.write('\n' + '主机选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_A_inorder[i])
                             duty_women_cnt += 1
-                            break
-                # added by songml for duty_women_cnt 20181214
-                else:  # 非女生
-                    if staff_old_night_A_inorder[i] in list_new:
-                        if duty_new_cnt == 0:  # 非女生 且为新人数 为 0  直接跳过
-                            duty.append(staff_old_night_A_inorder[i])
-                            f.write('\n' + '主机选人中，选中的新人(非女生)为：' + staff_old_night_A_inorder[i] + ' 新人数：'
-                                    + str(duty_women_cnt))
                             duty_new_cnt += 1
                             break
-                        else:
-                            f.write('\n' + ' 主机选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
+                        else:  # 女生小于2人 但新人数已经为1 直接跳过
+                            f.write('\n' + ' 主机选人中 且这次选中的人为女生 但女生数 < 2 但新人数超过1 跳过'
                                     + staff_old_night_A_inorder[i])
                             continue
                     else:
-                        if staff_old_night_A_inorder[i] not in list_main:
+                        duty.append(staff_old_night_A_inorder[i])
+                        f.write('\n' + '主机选人中 选中的非新人女生为：' + staff_old_night_A_inorder[i] )
+                        duty_women_cnt += 1
+                        break
+            # added by songml for duty_women_cnt 20181214
+            else:  # 非女生
+                if staff_old_night_A_inorder[i] in list_new:
+                    if duty_new_cnt == 0:  # 非女生 且为新人数 为 0  直接跳过
+                        duty.append(staff_old_night_A_inorder[i])
+                        f.write('\n' + '主机选人中，选中的新人(非女生)为：' + staff_old_night_A_inorder[i] + ' 新人数：'
+                                + str(duty_women_cnt))
+                        duty_new_cnt += 1
+                        break
+                    else:
+                        f.write('\n' + ' 主机选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
+                                + staff_old_night_A_inorder[i])
+                        continue
+                else:
+                    if staff_old_night_A_inorder[i] not in list_main:
+                        duty.append(staff_old_night_A_inorder[i])
+                        break
+                    else:
+                        if main_cnt < 3:
                             duty.append(staff_old_night_A_inorder[i])
+                            main_cnt += 1
+                            f.write('\n' + ' 主机选人中 且这次选中的男主岗为：' + staff_old_night_A_inorder[i])
                             break
                         else:
-                            if main_cnt < 3:
-                                duty.append(staff_old_night_A_inorder[i])
-                                main_cnt += 1
-                                f.write('\n' + ' 主机选人中 且这次选中的男主岗为：' + staff_old_night_A_inorder[i])
-                                break
-                            else:
-                                continue
+                            continue
 
                 # break
     ##############转换为新的值班表，列表形式############
@@ -1010,85 +1034,85 @@ def PaiBan(StartDate, Weekday, Specialday):
                     # 原来使用的是 staff_old_night_D_list 使用错误 20190923
                     if da in staff_old_night_D_inorder:
                         staff_old_night_D_inorder.remove(da)
-                f.write('\n' + '主机选择了一个总监助理后========数据库组，除去总监剩余的人===：' + str(staff_old_night_D_list))
+                f.write('\n' + '主机选择了一个总监助理后========数据库组，除去总监剩余的人===：' + str(staff_old_night_D_inorder))
             if duty[i] in list_oa: #主机组选中一个人有监控组属性后，与数据库组中监控的人互斥
                 for oa in list_oa:
                     if oa in staff_old_night_D_inorder:
                         staff_old_night_D_inorder.remove(oa)
-                f.write('\n' + '主机选择了OA属性的人后========数据库组除去OA属性的人，剩余的人===：' + str(staff_old_night_D_list))
+                f.write('\n' + '主机选择了OA属性的人后========数据库组除去OA属性的人，剩余的人===：' + str(staff_old_night_D_inorder))
             break
 
     ######选择主机  20190618 by songml #######################
 
     ######选择数据库  20190618 by songml #######################
-    if duty[0][0] != "D":
-        print("没有数据库，额外添加")
-        f.write('\n' + ' 没有数据库，额外添加')
-        f.write('\n'+str(staff_old_night_D_inorder))
-        f.write('\n' + str(LastMateList))
-        for i in range(len(staff_old_night_D_inorder)):  # 按照夜班数量的从小到大安排数据库岗位值班,并确保当天值班人员不是一个岗位的
-            if staff_old_night_D_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
-                continue
-            else:
+    # if duty[0][0] != "D":
+    #     print("没有数据库，额外添加")
+    #     f.write('\n' + ' 没有数据库，额外添加')
+    #     f.write('\n'+str(staff_old_night_D_inorder))
+    #     f.write('\n' + str(LastMateList))
+    for i in range(len(staff_old_night_D_inorder)):  # 按照夜班数量的从小到大安排数据库岗位值班,并确保当天值班人员不是一个岗位的
+        if staff_old_night_D_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
+            continue
+        else:
 
-                # added by songml for duty_women_cnt 20181214
-                if staff_old_night_D_inorder[i] in list_women:  # 如果选中了女生
-                    if duty_women_cnt == 2:  # 女生数已经为2
-                        f.write('\n' + ' 数据库选人中 且这次选中的人为女生 但女生数已为2 跳过 :' + staff_old_night_D_inorder[i])
-                        continue
-                    else:  # 女生数小于2
-                        if staff_old_night_D_inorder[i] in list_new:  # 选中的人为新人
-                            if duty_new_cnt == 0:  # 女生小于2人 且 新人数为0 添加并计数
-                                duty.append(staff_old_night_D_inorder[i])
-                                f.write('\n' + '数据库选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_D_inorder[i])
-                                duty_women_cnt += 1
-                                duty_new_cnt += 1
-                                break
-                            else:  # 女生小于2人 但新人数已经为1 直接跳过
-                                f.write('\n' + ' 数据库选人中 且这次选中的人为女生 但女生数 < 2 但新人数超过1 跳过'
-                                        + staff_old_night_D_inorder[i])
-                                continue
-                        else:# 选中的人不为新人
-                            if staff_old_night_D_inorder not in list_main: #不是主岗
-                                duty.append(staff_old_night_D_inorder[i])
-                                f.write('\n' + '数据库选人中 选中的非新人女生为：' + staff_old_night_D_inorder[i] )
-                                duty_women_cnt += 1
-                                break
-                            else:
-                                if main_cnt < 3: #主岗人数小于3，这个人是女主岗 目前走不到这里
-                                    duty.append(staff_old_night_D_inorder[i])
-                                    f.write('\n' + '数据库选人中 选中的非新人女生,并且为主岗为：' + staff_old_night_D_inorder[i])
-                                    duty_women_cnt += 1
-                                    main_cnt += 1
-                                    break
-                                else:
-                                    continue
-
-                # added by songml for duty_women_cnt 20181214
-                else:  # 非女生
-                    if staff_old_night_D_inorder[i] in list_new:
-                        if duty_new_cnt == 0:  # 非女生 且为新人数 为 0
+            # added by songml for duty_women_cnt 20181214
+            if staff_old_night_D_inorder[i] in list_women:  # 如果选中了女生
+                if duty_women_cnt == dutyWomenLimits:  # 女生数已经为 dutyWomenLimits
+                    f.write('\n' + ' 数据库选人中 且这次选中的人为女生 但女生数已为2 跳过 :' + staff_old_night_D_inorder[i])
+                    continue
+                else:  # 女生数小于2
+                    if staff_old_night_D_inorder[i] in list_new:  # 选中的人为新人
+                        if duty_new_cnt == 0:  # 女生小于2人 且 新人数为0 添加并计数
                             duty.append(staff_old_night_D_inorder[i])
-                            f.write('\n' + '数据库选人中，选中的新人(非女生)为：' + staff_old_night_D_inorder[i] + ' 新人数：'
-                                + str(duty_women_cnt))
+                            f.write('\n' + '数据库选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_D_inorder[i])
+                            duty_women_cnt += 1
                             duty_new_cnt += 1
                             break
-                        else:
-                            f.write('\n' + ' 数据库选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
+                        else:  # 女生小于2人 但新人数已经为1 直接跳过
+                            f.write('\n' + ' 数据库选人中 且这次选中的人为女生 但女生数 < 2 但新人数超过1 跳过'
                                     + staff_old_night_D_inorder[i])
                             continue
-                    else: #不是新人 非女生
-                        if staff_old_night_D_inorder[i] not in list_main: #不是主岗
+                    else:# 选中的人不为新人
+                        if staff_old_night_D_inorder not in list_main: #不是主岗
                             duty.append(staff_old_night_D_inorder[i])
+                            f.write('\n' + '数据库选人中 选中的非新人女生为：' + staff_old_night_D_inorder[i] )
+                            duty_women_cnt += 1
                             break
                         else:
-                            if main_cnt < 3: #是主岗，且当前已选中的主岗数量小于3
+                            if main_cnt < 3: #主岗人数小于3，这个人是女主岗 目前走不到这里
                                 duty.append(staff_old_night_D_inorder[i])
+                                f.write('\n' + '数据库选人中 选中的非新人女生,并且为主岗为：' + staff_old_night_D_inorder[i])
+                                duty_women_cnt += 1
                                 main_cnt += 1
-                                f.write('\n' + ' 数据库选人中 且这次选中的男主岗' + staff_old_night_D_inorder[i])
                                 break
                             else:
                                 continue
+
+            # added by songml for duty_women_cnt 20181214
+            else:  # 非女生
+                if staff_old_night_D_inorder[i] in list_new:
+                    if duty_new_cnt == 0:  # 非女生 且为新人数 为 0
+                        duty.append(staff_old_night_D_inorder[i])
+                        f.write('\n' + '数据库选人中，选中的新人(非女生)为：' + staff_old_night_D_inorder[i] + ' 新人数：'
+                            + str(duty_women_cnt))
+                        duty_new_cnt += 1
+                        break
+                    else:
+                        f.write('\n' + ' 数据库选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
+                                + staff_old_night_D_inorder[i])
+                        continue
+                else: #不是新人 非女生
+                    if staff_old_night_D_inorder[i] not in list_main: #不是主岗
+                        duty.append(staff_old_night_D_inorder[i])
+                        break
+                    else:
+                        if main_cnt < 3: #是主岗，且当前已选中的主岗数量小于3
+                            duty.append(staff_old_night_D_inorder[i])
+                            main_cnt += 1
+                            f.write('\n' + ' 数据库选人中 且这次选中的男主岗' + staff_old_night_D_inorder[i])
+                            break
+                        else:
+                            continue
                 # break
     ##############转换为新的值班表，列表形式############
     f.write('\n' + '选过主岗、网络、应用、主机、数据库的新版值班表：' + str(duty))
@@ -1096,73 +1120,73 @@ def PaiBan(StartDate, Weekday, Specialday):
     ######选择数据库  20190618 by songml #######################
 
     ######选择安全  20190618 by songml #######################
-    if duty[0][0] != "E":
-        print("没有安全，额外添加")
-        f.write('\n' + ' 没有安全，额外添加')
-        f.write('\n'+str(staff_old_night_E_inorder))
-        f.write('\n' + str(LastMateList))
-        for i in range(len(staff_old_night_E_inorder)):  # 按照夜班数量的从小到大安排数据库岗位值班,并确保当天值班人员不是一个岗位的
-            if staff_old_night_E_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
-                continue
-            else:
+    # if duty[0][0] != "E":
+    #     print("没有安全，额外添加")
+    #     f.write('\n' + ' 没有安全，额外添加')
+    #     f.write('\n'+str(staff_old_night_E_inorder))
+    #     f.write('\n' + str(LastMateList))
+    for i in range(len(staff_old_night_E_inorder)):  # 按照夜班数量的从小到大安排数据库岗位值班,并确保当天值班人员不是一个岗位的
+        if staff_old_night_E_inorder[i] in LastMateList:  # 判断和上一日值班人员是否重复
+            continue
+        else:
 
-                # added by songml for duty_women_cnt 20181214
-                if staff_old_night_E_inorder[i] in list_women:  # 如果选中了女生
-                    if duty_women_cnt == 2:  # 女生数已经为2
-                        f.write('\n' + ' 安全选人中 且这次选中的人为女生 但女生数已为2 跳过 :' + staff_old_night_E_inorder[i])
-                        continue
-                    else:  # 女生数小于2
-                        if staff_old_night_E_inorder[i] in list_new:  # 选中的人为新人
-                            if duty_new_cnt == 0:  # 女生小于2人 且 新人数为0 添加并计数
-                                duty.append(staff_old_night_E_inorder[i])
-                                f.write('\n' + '安全选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_E_inorder[i])
-                                duty_women_cnt += 1
-                                duty_new_cnt += 1
-                                break
-                            else:  # 女生小于2人 但新人数已经为1 直接跳过
-                                f.write('\n' + ' 安全选人中 且这次选中的人为女生 但女生数 < 2 但新人数超过1 跳过'
-                                        + staff_old_night_E_inorder[i])
-                                continue
-                        else:
-                            if staff_old_night_E_inorder not in list_main:
-                                duty.append(staff_old_night_E_inorder[i])
-                                f.write('\n' + '安全选人中 选中的非新人女生、非主岗为：' + staff_old_night_E_inorder[i] )
-                                duty_women_cnt += 1
-                                break
-                            else:
-                                if main_cnt < 3:
-                                    duty.append(staff_old_night_E_inorder[i])
-                                    f.write('\n' + '安全选人中 选中的非新人女生,并且为主岗为：' + staff_old_night_E_inorder[i])
-                                    duty_women_cnt += 1
-                                    main_cnt += 1
-                                    break
-                                else:
-                                    continue
-                # added by songml for duty_women_cnt 20181214
-                else:  # 非女生
-                    if staff_old_night_E_inorder[i] in list_new:
-                        if duty_new_cnt == 0:  # 非女生 且为新人数 为 0  直接跳过
+            # added by songml for duty_women_cnt 20181214
+            if staff_old_night_E_inorder[i] in list_women:  # 如果选中了女生
+                if duty_women_cnt == dutyWomenLimits:  # 女生数已经为 dutyWomenLimits
+                    f.write('\n' + ' 安全选人中 且这次选中的人为女生 但女生数已为 dutyWomenLimits 跳过 :' + staff_old_night_E_inorder[i])
+                    continue
+                else:  # 女生数小于2
+                    if staff_old_night_E_inorder[i] in list_new:  # 选中的人为新人
+                        if duty_new_cnt == 0:  # 女生小于2人 且 新人数为0 添加并计数
                             duty.append(staff_old_night_E_inorder[i])
-                            f.write('\n' + '安全选人中，选中的新人(非女生)为：' + staff_old_night_E_inorder[i] + ' 新人数：'
-                                    + str(duty_women_cnt))
+                            f.write('\n' + '安全选人女生<2且新人=0;选中的女生新人为：' + staff_old_night_E_inorder[i])
+                            duty_women_cnt += 1
                             duty_new_cnt += 1
                             break
-                        else:
-                            f.write('\n' + ' 安全选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
+                        else:  # 女生小于2人 但新人数已经为1 直接跳过
+                            f.write('\n' + ' 安全选人中 且这次选中的人为女生 但女生数 < 2 但新人数超过1 跳过'
                                     + staff_old_night_E_inorder[i])
                             continue
                     else:
-                        if staff_old_night_E_inorder[i] not in list_main:
+                        if staff_old_night_E_inorder not in list_main:
                             duty.append(staff_old_night_E_inorder[i])
+                            f.write('\n' + '安全选人中 选中的非新人女生、非主岗为：' + staff_old_night_E_inorder[i] )
+                            duty_women_cnt += 1
                             break
                         else:
                             if main_cnt < 3:
                                 duty.append(staff_old_night_E_inorder[i])
+                                f.write('\n' + '安全选人中 选中的非新人女生,并且为主岗为：' + staff_old_night_E_inorder[i])
+                                duty_women_cnt += 1
                                 main_cnt += 1
-                                f.write('\n' + ' 安全岗位选人中 且这次选中的男主岗为：' + staff_old_night_E_inorder[i])
                                 break
                             else:
                                 continue
+            # added by songml for duty_women_cnt 20181214
+            else:  # 非女生
+                if staff_old_night_E_inorder[i] in list_new:
+                    if duty_new_cnt == 0:  # 非女生 且为新人数 为 0  直接跳过
+                        duty.append(staff_old_night_E_inorder[i])
+                        f.write('\n' + '安全选人中，选中的新人(非女生)为：' + staff_old_night_E_inorder[i] + ' 新人数：'
+                                + str(duty_women_cnt))
+                        duty_new_cnt += 1
+                        break
+                    else:
+                        f.write('\n' + ' 安全选人中 且这次选中的人为新人、非女生， 但新人数已为1 跳过 '
+                                + staff_old_night_E_inorder[i])
+                        continue
+                else:
+                    if staff_old_night_E_inorder[i] not in list_main:
+                        duty.append(staff_old_night_E_inorder[i])
+                        break
+                    else:
+                        if main_cnt < 3:
+                            duty.append(staff_old_night_E_inorder[i])
+                            main_cnt += 1
+                            f.write('\n' + ' 安全岗位选人中 且这次选中的男主岗为：' + staff_old_night_E_inorder[i])
+                            break
+                        else:
+                            continue
                 # break
     ##############转换为新的值班表，列表形式############
     f.write('\n' + '选过主岗、网络、应用、主机、数据库、安全的新版值班表：' + str(duty))
